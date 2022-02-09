@@ -1,7 +1,7 @@
 classdef Rotation
-    % Rotation  Summary of Rotation
-    % Rotation class that takes in a user input and (currently) stores it
-    % as axis-angle format.
+    % Rotation Class contains static methods for converting rotation
+    % representations and (WIP) member methods for storing and manipulating
+    % rotations.
     %
     % Rotation Properties:
     %   rotm - the rotation matrix representation in a 3x3 matrix
@@ -9,12 +9,12 @@ classdef Rotation
     % Rotation Static Methods:
     %   rotm2axangle - convert 3x3 rotation matrix to axis-angle
     %   representation
-    %   rotm2quaternion - convert 3x3 rotation matrix to quaternion
+    %   rotm2quaternion - convert 3x3 rotation matrix to 4x1 quaternion
     %   representation
     %   rotm2euler - convert 3x3 rotation matrix to 3 angle representation
     %   of either ZYZ or RPY
     %   axangle2rotm - convert axis-angle representation to a 3x3 rotm
-    %   quaternion2rotm - convert quaternion representation to a 3x3 rotm
+    %   quaternion2rotm - convert 4x1 quaternion representation to a 3x3 rotm
     %
     % Rotation Methods:
     %   Rotation - constructor function
@@ -68,14 +68,14 @@ classdef Rotation
         end
 
         function q = rotm2quaternion(rotm)
-            % rotm2quaternion Converts a given rotation matrix to
+            % rotm2quaternion Converts a given rotation matrix to a 4x1
             % quaternion representation.
             %
             % Parameters:
             %   rotm - 3x3 rotation matrix representation
             %
             % Returns:
-            %   q - quaternion representation
+            %   q - 4x1 quaternion representation [w,z,y,x]
             arguments
                 rotm (3,3) double
             end
@@ -158,11 +158,11 @@ classdef Rotation
         end
 
         function rotm = quaternion2rotm(q)
-            % quaternion2rotm converts a quaternion to a rotation matrix
-            % representation
+            % quaternion2rotm converts a 4x1 quaternion [w,x,y,z] to 
+            % rotation matrix representation
             %
             % Parameters:
-            %   q - input quaternion representation of a rotation
+            %   q - input 4x1 quaternion representation of a rotation
             %
             % Returns:
             %   rotm - 3x3 rotation matrix
