@@ -34,13 +34,37 @@ classdef Rotation
             %   rotm - 3x3 rotation matrix representation
             %
             % Returns:
-            %   axis - axis of rotation as a 1x3 vector
+            %   axis - axis of rotation as a 3x1 vector
             %   angle - angle of rotation in radians
             arguments
                 rotm (3,3) double
             end
-            axis = rotm(:,1);
-            angle = 1;
+      
+            tr_R = sum(diag(rotm)); % Trace of rotm, tr(R)
+            tolerance = 0.001;
+
+            if rotm==eye(3)
+                % Case 1: Angle = 0
+                angle = 0;
+                axis = [1; 0; 0]; % axis is undefined. Default to x-axis.
+            elseif abs(tr_R+1) <= tolerance
+                % Case 2: Angle = pi
+                angle = pi;
+
+                % Make sure the denominator is nonzero
+                if rotm(1,1) ~= -1
+                    axis = ( 1/sqrt(2*(1+rotm(1,1))) ) * (rotm(:,1) + [1;0;0]);
+                elseif rotm(2,2) ~= -1
+                    axis = ( 1/sqrt(2*(1+rotm(2,2))) ) * (rotm(:,2) + [0;1;0]);
+                else
+                    axis = ( 1/sqrt(2*(1+rotm(3,3))) ) * (rotm(:,3) + [0;0;1]);
+                end
+            else
+                % Case 3: General case
+                angle = acos( 0.5*(tr_R - 1) );
+                w_skew = ( 1/(2*sin(angle)) ) * (rotm - rotm');
+                axis = [w_skew(3,2); w_skew(1,3); w_skew(2,1)];
+            end
         end
 
         function q = rotm2quaternion(rotm)
@@ -87,20 +111,35 @@ classdef Rotation
         end
 
         function rotm = axangle2rotm(axis, angle)
-            % axangle2rotm Converts axis-angle representation to aa 3x3
-            % rotm
+            % axangle2rotm Converts axis-angle representation to a 3x3
+            % rotm using Rodrigues' formula
             %
             % Parameters:
-            %   axis - axis of rotation as a 1x3 vector
+            %   axis - axis of rotation as a 3x1 vector
             %   angle - angle of rotation in radians
             %
             % Returns:
             %   rotm - 3x3 rotation matrix
+            
             arguments
-                axis (1,3) double
+                axis (3,1) double
                 angle double
             end
-            rotm = axis*angle;
+            
+            % check if unit axis
+            tolerance = 0.001;
+            if abs(norm(axis)-1) > tolerance
+                fprintf('Warning: in axangle2rotm(axis,angle), "axis"')
+                fprintf(' is not a unit vector. It was converted ')
+                fprintf('automatically. Please verify that this is fine.\n')
+                axis = axis/norm(axis);
+            end
+
+            % Rodrigues' formula
+            w_skew = [       0, -axis(3),  axis(2);
+                       axis(3),        0, -axis(1);
+                      -axis(2),  axis(1),        0];
+            rotm = eye(3) + w_skew*sin(angle) + w_skew^2*(1-cos(angle));
         end
 
         function rotm = quaternion2rotm(q)
