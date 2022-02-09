@@ -79,7 +79,22 @@ classdef Rotation
             arguments
                 rotm (3,3) double
             end
-            q = [1 rotm(1,:)];
+
+            % Setup q and calc scalar val
+            q = zeros(4,1);
+            q(1) = 0.5*sqrt( sum(diag(rotm))+1 );
+            
+            % set indexes for vector calc
+            idxs = [3 1 2;
+                    2 3 1];
+
+            % solve for vector components
+            for i=1:3
+                a = idxs(1,i);
+                b = idxs(2,i);
+                q(i+1) = 0.5*sign(rotm(a,b) - rotm(b,a)) * ...
+                    sqrt( rotm(i,i) - rotm(b,b) - rotm(a,a) + 1 );
+            end
         end
 
         function angles = rotm2euler(rotm, format)
@@ -153,11 +168,44 @@ classdef Rotation
             %   rotm - 3x3 rotation matrix
 
             arguments
-                q (1,4) double
+                q (4,1) double
+            end
+            
+            % check if unit quaternion
+            tolerance = 0.001;
+            if abs(norm(q)-1) > tolerance
+                fprintf('Warning: in quaternion2rotm(q), "q"')
+                fprintf(' is not a unit vector. It was converted ')
+                fprintf('automatically. Please verify that this is fine.\n')
+                q = axis/norm(q);
             end
 
-            rotm = eye(3);
-            rotm(1,:) = q(2:end);
+            rotm = zeros(3);
+
+            % calc diagonal of rotm
+            for i=1:3
+                signs_vect = -1*ones(4,1);
+                signs_vect([1 i+1]) = 1;
+
+                rotm(i,i) = sum(q.^2 .* signs_vect);
+            end
+
+            % calc rest of rotm
+            for i=1:3
+                for j=1:3
+                    % skip if on main diagonal
+                    if i==j
+                        continue
+                    end
+                    % 3rd index
+                    k = 6 - i - j;
+                    
+                    % sign of second term
+                    if (j==k+1 ||j==k-2), sost=1; else, sost=-1; end
+
+                    rotm(i,j) = 2*(q(i+1)*q(j+1) + sost*q(1)*q(k+1));
+                end
+            end
         end
     end
     
