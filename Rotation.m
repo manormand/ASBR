@@ -15,6 +15,7 @@ classdef Rotation
     %   of either ZYZ or RPY
     %   axangle2rotm - convert axis-angle representation to a 3x3 rotm
     %   quaternion2rotm - convert 4x1 quaternion representation to a 3x3 rotm
+    %   skewify - convert a 3 element array to skew matrix form
     %
     % Rotation Methods:
     %   Rotation - constructor function
@@ -110,7 +111,7 @@ classdef Rotation
             %   specification
             arguments
                 rotm (3,3) double
-                format {mustBeText} = 'ZYZ'
+                format {isstring} = 'ZYZ'
             end
             
             switch(format)
@@ -151,9 +152,7 @@ classdef Rotation
             end
 
             % Rodrigues' formula
-            w_skew = [       0, -axis(3),  axis(2);
-                       axis(3),        0, -axis(1);
-                      -axis(2),  axis(1),        0];
+            w_skew = skewify(axis);
             rotm = eye(3) + w_skew*sin(angle) + w_skew^2*(1-cos(angle));
         end
 
@@ -206,6 +205,20 @@ classdef Rotation
                     rotm(i,j) = 2*(q(i+1)*q(j+1) + sost*q(1)*q(k+1));
                 end
             end
+        end
+
+        function w_skew = skewify(w)
+            % skewify converts a 3 element vector to a skew matrix
+            %
+            % Parameters:
+            %   w - a 3 element vector
+            %
+            % Returns:
+            %   w_skew - 3x3 skew matrix of w
+
+            w_skew = [   0    -w(3)   w(2);
+                       w(3)      0   -w(1);
+                      -w(2)    w(1)     0];
         end
     end
     
