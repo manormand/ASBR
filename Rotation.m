@@ -116,14 +116,18 @@ classdef Rotation
             
             switch(format)
                 case 'ZYZ'
-                    % ZYZ
+                    phi = atan2(rotm(2,3),rotm(1,3));
+                    theta = atan2( sqrt(rotm(1,3)^2 + rotm(2,3)^2), rotm(3,3));
+                    psi = atan2(rotm(3,2), -rotm(3,1));
                 case 'RPY'
-                    % RPY
+                    phi = atan2(rotm(2,1), rotm(1,1));
+                    theta = atan2(-rotm(3,1), sqrt(rotm(3,2)^2 + rotm(3,3)^2));
+                    psi = atan2(rotm(3,2), rotm(3,3));
                 otherwise
                     error('Error in rotm2euler:\n"%s" is not a recognized format', ...
                         format)
             end
-            angles = rotm(1,:);
+            angles = [phi, theta, psi]';
         end
 
         function rotm = axangle2rotm(axis, angle)

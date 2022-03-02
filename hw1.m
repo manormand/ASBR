@@ -5,13 +5,11 @@
 %% General + Scratch
 clear; clc
 
-
 %% Handwritten 3a
 syms w1 w2 w3 th lamb
 w = [w1 w2 w3].';
 
 w_skew = Rotation.skewify(w);
-rotm = eye(3) + w_skew*sin(th) + w_skew^2*(1-cos(th));
 
 disp('---w_skew Matrix Reduction with Eigenvalues---')
 for lambda = [0 1i -1i]
@@ -81,3 +79,17 @@ twist_a = [            Rsa' zeros(3);
 
 disp('twist_a:')
 disp(twist_a)
+
+%% Problem 1
+% define givens
+theta = deg2rad(30);
+w = [0; 0.866; 0.5];
+
+% Get Euler Angles
+rotm = Rotation.axangle2rotm(w,theta);
+Phi = Rotation.rotm2euler(rotm, 'RPY');
+
+% check validity
+Phi_act = [0.0644047, 0.4478289, 0.2810408]';
+tolerance = 0.001;
+rotm_check = abs(Phi-Phi_act) <= tolerance
