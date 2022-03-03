@@ -4,7 +4,8 @@ Authors: Pranav Kalyani, Michael Normand
 Date: 03 Mar 2022
 
 # Files
-    - hw1.m: Solution for HW1
+    - THA1_programming.m: Programming assignment with tests
+    - THA1_handwritten.m: Some calculations for handwritten portion
     - reduceMatrix.m: Function to a matrix to its main diagonal.
     - Rotation.m: Defines the Rotation class
     - RotationTests.m: Defines UnitTests for Rotation Class

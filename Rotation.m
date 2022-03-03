@@ -26,6 +26,13 @@ classdef Rotation
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    enumeration
+        % euler angle formats
+        ZYZ
+        RPY
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods(Static)
         function [axis,angle] = rotm2axangle(rotm)
             % rotm2axangle Converts a given rotation matrix to
@@ -101,33 +108,28 @@ classdef Rotation
         function angles = rotm2euler(rotm, format)
             % rotm2euler Converts a given rotation matrix to
             % euler angle representation. The user can specify the format
-            % meaning ZYZ, RPY
+            % of euler angles to "ZYZ" or "RPY"
             %
             % Parameters:
             %   rotm - 3x3 rotation matrix representation
             %   format - choose between 'ZYZ' (default) and 'RPY'
             % Returns:
             %   angles - a 1x3 vector of desired angles according to
-            %   specification
+            %   format specification
             arguments
                 rotm (3,3) double
-                format {isstring} = 'ZYZ'
+                format Rotation
             end
             
             switch(format)
-                case 'ZYZ'
-                    phi = atan2(rotm(2,3),rotm(1,3));
-                    theta = atan2( sqrt(rotm(1,3)^2 + rotm(2,3)^2), rotm(3,3));
-                    psi = atan2(rotm(3,2), -rotm(3,1));
-                case 'RPY'
-                    phi = atan2(rotm(2,1), rotm(1,1));
-                    theta = atan2(-rotm(3,1), sqrt(rotm(3,2)^2 + rotm(3,3)^2));
-                    psi = atan2(rotm(3,2), rotm(3,3));
+                case Rotation.ZYZ
+                    angles = rotm2zyz(rotm);
+                case Rotation.RPY
+                    angles = rotm2rpy(rotm);
                 otherwise
                     error('Error in rotm2euler:\n"%s" is not a recognized format', ...
                         format)
             end
-            angles = [phi, theta, psi]';
         end
 
         function rotm = axangle2rotm(axis, angle)
@@ -156,7 +158,7 @@ classdef Rotation
             end
 
             % Rodrigues' formula
-            w_skew = skewify(axis);
+            w_skew = Rotation.skewify(axis);
             rotm = eye(3) + w_skew*sin(angle) + w_skew^2*(1-cos(angle));
         end
 
@@ -242,4 +244,41 @@ classdef Rotation
             obj.rotm = eye(3);
         end
     end
+end
+
+
+%% Helper Functions
+function rpy = rotm2rpy(rotm)
+% Algorithm from _Modern Robotics_ Appendix B.1.1
+if rotm(3,1)==1
+    alpha = 0;
+    beta  = -pi/2;
+    gamma = -atan2(rotm(1,2), rotm(2,2));
+elseif rotm(3,1)==-1
+    alpha = 0;
+    beta  = pi/2;
+    gamma = atan2(rotm(1,2), rotm(2,2));
+else
+    alpha = atan2(rotm(2,1), rotm(1,1));
+    beta  = atan2(-rotm(3,1), sqrt(rotm(3,2)^2 + rotm(3,3)^2));
+    gamma = atan2(rotm(3,2), rotm(3,3));
+end
+
+rpy = [alpha beta gamma];
+end
+
+function zyz = rotm2zyz(rotm)
+% Algorithm from Lecture Notes W3-L1
+alpha = atan2(rotm(2,3), rotm(1,3));
+beta  = atan2(sqrt(rotm(1,3)^2 + rotm(2,3)^2), rotm(3,3));
+gamma = atan2(rotm(3,2), -rotm(3,1));
+
+% check if beta < 0
+if rotm(1,3)~=(cos(alpha)*sin(beta))
+    alpha = atan2(-rotm(2,3), -rotm(1,3));
+    beta  = atan2(-sqrt(rotm(1,3)^2 + rotm(2,3)^2), rotm(3,3));
+    gamma = atan2(-rotm(3,2), rotm(3,1));
+end
+
+zyz = [alpha beta gamma];
 end
