@@ -10,11 +10,12 @@ classdef Rotation
     %   rotm2axangle - convert 3x3 rotation matrix to axis-angle
     %   representation
     %   rotm2quaternion - convert 3x3 rotation matrix to 4x1 quaternion
-    %   representation
+    %       representation
     %   rotm2euler - convert 3x3 rotation matrix to 3 angle representation
-    %   of either ZYZ or RPY
+    %       of either ZYZ or RPY
     %   axangle2rotm - convert axis-angle representation to a 3x3 rotm
-    %   quaternion2rotm - convert 4x1 quaternion representation to a 3x3 rotm
+    %   quaternion2rotm - convert 4x1 quaternion representation to a 
+    %       3x3 rotm
     %   skewify - convert a 3 element array to skew matrix form
     %
     % Rotation Methods:
@@ -61,11 +62,11 @@ classdef Rotation
 
                 % Make sure the denominator is nonzero
                 if rotm(1,1) ~= -1
-                    axis = ( 1/sqrt(2*(1+rotm(1,1))) ) * (rotm(:,1) + [1;0;0]);
+                    axis = (2*(1+rotm(1,1)))^-0.5 * (rotm(:,1) + [1;0;0]);
                 elseif rotm(2,2) ~= -1
-                    axis = ( 1/sqrt(2*(1+rotm(2,2))) ) * (rotm(:,2) + [0;1;0]);
+                    axis = (2*(1+rotm(2,2)))^-0.5 * (rotm(:,2) + [0;1;0]);
                 else
-                    axis = ( 1/sqrt(2*(1+rotm(3,3))) ) * (rotm(:,3) + [0;0;1]);
+                    axis = (2*(1+rotm(3,3)))^-0.5 * (rotm(:,3) + [0;0;1]);
                 end
             else
                 % Case 3: General case
@@ -118,7 +119,7 @@ classdef Rotation
             %   format specification
             arguments
                 rotm (3,3) double
-                format Rotation
+                format Rotation % locks format to enum
             end
             
             switch(format)
@@ -126,9 +127,6 @@ classdef Rotation
                     angles = rotm2zyz(rotm);
                 case Rotation.RPY
                     angles = rotm2rpy(rotm);
-                otherwise
-                    error('Error in rotm2euler:\n"%s" is not a recognized format', ...
-                        format)
             end
         end
 
@@ -246,8 +244,12 @@ classdef Rotation
     end
 end
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Helper Functions
+% These functions are used for Euler representation derivation.
+%
+
+%
 function rpy = rotm2rpy(rotm)
 % Algorithm from _Modern Robotics_ Appendix B.1.1
 if rotm(3,1)==1
@@ -267,6 +269,7 @@ end
 rpy = [alpha beta gamma];
 end
 
+%
 function zyz = rotm2zyz(rotm)
 % Algorithm from Lecture Notes W3-L1
 alpha = atan2(rotm(2,3), rotm(1,3));
