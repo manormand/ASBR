@@ -224,7 +224,11 @@ screw_ax_length = 20;
 screw_ax = [(q_b-w_b*screw_ax_length) q_b (q_b+w_b*screw_ax_length)];
 
 % Init plot
-figure()
+figWidth = 960; % pixels
+figHeight = 720;
+rect = [0 50 figWidth figHeight];
+fig = figure('OuterPosition',rect);
+
 plot3(screw_ax(1,:), screw_ax(2,:), screw_ax(3,:), 'm:', LineWidth=3)
     title('Screw That!!!')
     xlabel('X'), ylabel('Y'), zlabel('Z')
