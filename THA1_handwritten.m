@@ -77,3 +77,46 @@ twist_a = [            Rsa' zeros(3);
 
 disp('twist_a:')
 disp(twist_a)
+
+%% Handwritten 7j
+clc; close all
+load("ex.mat")
+% defined:
+% p, R, th, v, w
+T = [ R p; 0 0 0 1];
+
+b = tan(th/2)*w;
+d = p;
+d_star = d - b;
+
+q = cross(b, (d_star - cross(b,d_star)) ) / (2*dot(b,b));
+
+screw_ax_length = 10;
+screw_ax = [(q-w*screw_ax_length) q (q+w*screw_ax_length)];
+
+figure()
+plot3(screw_ax(1,:), screw_ax(2,:), screw_ax(3,:), 'm:', LineWidth=3)
+    hold on
+plot3(0,0,0,'ko')
+plot3(p(1),p(2),p(3), 'ro')
+plot3([0 1],[0 0],[0 0], 'b')
+plot3([0 0],[0 1],[0 0], 'r')
+plot3([0 0],[0 0],[0 1], 'g')
+    title('Problem 7j')
+    xlabel('X'), ylabel('Y'), zlabel('Z'),
+    axis equal
+    grid on
+
+col = ["b" "r" "g"];
+axes = eye(4,3); axes(end,:) = 1;
+for i = 1:3
+    ax = T*axes(:,i);
+    X = [p(1) ax(1)];
+    Y = [p(2) ax(2)];
+    Z = [p(3) ax(3)];
+
+    plot3(X,Y,Z,col(i))
+end
+
+legend(["$S_1$","$\{s\} O$","$\{b\} O$"],'Interpreter','latex', 'FontSize',14)
+xlim(xl), ylim(yl), zlim(zl)
