@@ -1,4 +1,4 @@
-# ASBR
+# ASBR - THA1
 Algorithms for Sensor-Based Robotics Class Repo.
 Authors: Pranav Kalyani, Michael Normand
 Date: 03 Mar 2022
