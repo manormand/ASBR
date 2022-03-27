@@ -23,6 +23,6 @@ Additional files included are:
 
 # Functions
 ### screwAxis2TMat()
-    - Converts Screw Axis representations to Transform Matrices
+Converts Screw Axis representations to Transform Matrices
 ### skewify()
-    - Returns the skew matrix reperesentation of a vector
+Returns the skew matrix reperesentation of a vector
