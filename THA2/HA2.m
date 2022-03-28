@@ -3,6 +3,7 @@
 %
 %%
 clear; clc; close all;
+addpath("src\") % adds src directory containing functions
 
 %% Problem 4
 

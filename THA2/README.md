@@ -17,12 +17,18 @@ As per instructions, enclosed files are:
 - J_transpose_kinematics.m
 
 Additional files included are:
-- HA2.m
-- screwAxis2TMat.m
-- skewify.m
+- HA2.m: checks work for HA2
+- urdf/kuka_iiwa7_URDF.xacro: robot configuration
+- src/screwAxis2TMat.m
+- src/skewify.m
 
-# Functions
+# src/
 ### screwAxis2TMat()
 Converts Screw Axis representations to Transform Matrices
 ### skewify()
 Returns the skew matrix reperesentation of a vector
+
+# urdf/
+Contains robot configurations in urdf format
+### kuka_iiwa7_URDF.xacro
+KUKA LBR robot config
