@@ -1,6 +1,6 @@
 <!-- URDF for Kuka_iiwa7 -->
 <!-- From: https://github.com/kuka-isir/iiwa_description/blob/master/urdf/iiwa7.xacro -->
-<?xml version="1.0"?>
+<!-- ?xml version="1.0"? -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
