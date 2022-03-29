@@ -1,6 +1,6 @@
 # THA2 Folder
 This folder builds on THA1 code for THA2.
-We are using the robot <robot>
+We are using the robot: Kuka LBR IIWA7
 
 As per instructions, enclosed files are:
 - FK_space.m
@@ -19,10 +19,13 @@ As per instructions, enclosed files are:
 Additional files included are:
 - HA2.m: checks work for HA2
 - urdf/kuka_iiwa7_URDF.xacro: robot configuration
+- src/getRobotFromURDF.m
 - src/screwAxis2TMat.m
 - src/skewify.m
 
 # src/
+### getRobotFromURDF()
+Converts a URDF file and returns a struct containing all joint and link spacial attributes
 ### screwAxis2TMat()
 Converts Screw Axis representations to Transform Matrices
 ### skewify()
