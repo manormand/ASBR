@@ -80,3 +80,5 @@ Jacob_body = J_body(B,q);
 fprintf('\tJ_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_body.')
+
+ssss
