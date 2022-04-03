@@ -17,6 +17,18 @@ dwf = 0.126;
 
 M = eye(4); M(3,4) = dbs+dse+dew+dwf;
 
+q = deg2rad([20 -10 30 0 -30 45 0]);
+
+%% PA.b - Space Form Forward Kinematics
+% The function FK_space accepts any serial chain specified in space-form
+% screw axes
+%
+%%
+% <include>src/FK_space.m</include>
+%
+%%
+% Kuka LBR example:
+
 % Space form Screw Axes
 S = [   0    0 0       0 0            0 0;
         0    1 0      -1 0            1 0;
@@ -25,19 +37,32 @@ S = [   0    0 0       0 0            0 0;
         0    0 0       0 0            0 0;
         0    0 0       0 0            0 0];
 
-%% PA.b
-% We use the following function to compute the forward kinematics of any
-% serial chain manipulator
-%
-%%
-% <include>src/FK_space.m</include>
-%
-%%
-% Use:
-q = deg2rad([0 0 0 0 0 0 0]);
 T_space = FK_space(M,S,q);
 
 fprintf('\tT_space:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
 
-%% Pa.c
+%% Pa.c - Body Form Forward Kinematics
+% The function FK_body accepts any serial chain specified in body-form
+% screw axes
+%
+%%
+% <include>src/FK_body.m</include>
+%
+%%
+% Kuka LBR example:
+
+% Body Form Screw Axes
+B = [   0           0 0        0 0   0 0;
+        0           1 0       -1 0   1 0;
+        1           0 1        0 1   0 1;
+        0 dse+dew+dwf 0 -dew-dwf 0 dwf 0;
+        0           0 0        0 0   0 0;
+        0           0 0        0 0   0 0];
+
+T_body = FK_body(M,B,q);
+
+fprintf('\tT_body:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
+
+%% PA.d

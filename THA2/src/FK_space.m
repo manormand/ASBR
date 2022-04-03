@@ -5,7 +5,7 @@ function T = FK_space(M,S,q)
 % Use:
 % T = FK_space(M,S,q)
 %   - M is the home position Transform
-%   - S is a 6xn matrix of the Screw Axes for each joint
+%   - S is a 6xn matrix of the Space-Form Screw Axes for each joint
 %   - q is an n-element array of joint positions
 T = eye(4);
 for i=1:width(S)
