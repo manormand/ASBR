@@ -65,4 +65,18 @@ T_body = FK_body(M,B,q);
 fprintf('\tT_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
 
-%% PA.d
+%% PA.e - Jacobians
+% Space Form
+Jacob_space = J_space(S,q);
+
+fprintf('\tJ_space:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
+        Jacob_space.')
+
+%%
+% Body Form
+Jacob_body = J_body(B,q);
+
+fprintf('\tJ_body:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
+        Jacob_body.')
