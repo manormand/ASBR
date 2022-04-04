@@ -8,6 +8,11 @@ function J = J_body(B, q)
 %
 %   See also J_space
 
+arguments
+    B (6,:)
+    q
+end
+
 J = B;
 T = eye(4);
 for j = width(J)-1:-1:1

@@ -7,6 +7,8 @@ function T_mat = screwAxis2TMat(w,v,theta)
 %   - w and v are the 3x1 properties of the screw axis
 %   - theta is the distance traveled on the screw axis
 %   - T_mat is the 4x4 Transformation Matrix
+%
+%   See also tMat2ScrewAxis
 arguments
     w (3,1)
     v (3,1)

@@ -7,6 +7,15 @@ function T = FK_space(M,S,q)
 %   - M is the home position Transform
 %   - S is a 6xn matrix of the Space-Form Screw Axes for each joint
 %   - q is an n-element array of joint positions
+%
+%   See also FK_body
+
+arguments
+    M (4,4)
+    S (6,:)
+    q
+end
+
 T = eye(4);
 for i=1:width(S)
     T_i = screwAxis2TMat(S(1:3,i), S(4:6,i), q(i));
