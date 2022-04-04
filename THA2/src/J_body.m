@@ -5,16 +5,13 @@ function J = J_body(B, q)
 % J = J_body(B, q)
 %   - B is a 6xn screw axis representation of an _n_ link serial chain
 %   - q is a n-element array of the joint positions
+%
+%   See also J_space
 
-J = zeros(size(B));
-n = width(B);
-
-for j = 1:n
-    % Find the adjunct of next links
-    T = eye(4);
-    for i = j+1:n
-        T = T / screwAxis2TMat(B(1:3,i), B(4:6,i), q(i));
-    end
+J = B;
+T = eye(4);
+for j = width(J)-1:-1:1
+    T = T * screwAxis2TMat(-B(1:3,j+1), -B(4:6,j+1), q(j+1));
 
     % fill column using Ad and Screw Axis
     J(:,j) = Ad(T)*B(:,j);
