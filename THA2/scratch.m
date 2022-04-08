@@ -1,32 +1,22 @@
 clear; clc
-syms dbs dse dew dwf
-syms c1 c2 c3 c4 c5 c6 c7
-syms s1 s2 s3 s4 s5 s6 s7
 
-w3 = Rot('z',c1,s1)*Rot('y',c2,s2)*[0;0;1]
-q3 = [0 0 dbs].' + Rot('y',c2,s2)*[0 0 dse].'
-v3 = cross(-w3, q3)
+L1 = 0.2545;
+L2 = 0.242;
+L3 = 0.202;
+L4 = 112.63;
+L5 = 345.95;
+L6 = 293;
 
+B = [[1 0 0 0 0 0]',...
+     [0 1 0 0 0 -L6]',...
+     [0 1 0 -L5 0 -L6]',...
+     [0 -0.5 -0.8660 0.866*L2-0.5*(L5+L4) -0.866*L6 0.5*L6]',...
+     [0.342 -0.9397 0 0.9397*(L5+L4) 0.342*(L5+L4) 0.342*L2 + 0.9397*L6]',...
+     [0 0 1 L2 L1+L3+L6 0]',...
+     [1 0 0 0 L4+L5 L2]'];
 
-w4 = Rot('z',c1,s1)*Rot('y',c2,s2)*Rot('z',c2,s2)*[0 -1 0].'
-q4 = q3
-v4 = cross(-w4,q4)
+M = eye(4); M(1:3,4) = [-L6; -L2; L4+L5];
 
+q = zeros(7,1);
 
-%%
-function R = Rot(dir, c, s)
-switch (dir)
-    case 'x'
-        R = [1 0 0;
-             0 c -s;
-             0 s c];
-    case 'y'
-        R = [c 0 s;
-             0 1 0;
-            -s 0 c];
-    case 'z'
-        R = [c -s 0;
-             s  c 0;
-             0  0 1];
-end
-end
+FK_body(M,B,q)
