@@ -49,7 +49,7 @@ while outside_tolerance(Vb) && i < max_iter
 end
 
 % outputs
-q_des = q;
+q_des = wrapToPi(q);
 
 if nargin > 1
     itered_out = i > max_iter;

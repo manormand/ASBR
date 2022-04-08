@@ -56,9 +56,10 @@ S = [   0    0 0       0 0            0 0;
 
 T_space = FK_space(M,S,q, true);
 
+disp('=============================================')
 fprintf('\tT_space:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
-
+disp('=============================================')
 %% PA.c - Body Form Forward Kinematics
 % The function FK_body accepts any serial chain specified in body-form
 % screw axes
@@ -77,9 +78,10 @@ B = [   0           0 0        0 0   0 0;
 
 T_body = FK_body(M,B,q);
 
+disp('=============================================')
 fprintf('\tT_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
-
+disp('=============================================')
 %% PA.e - Jacobians
 % *Space Form* Jacobian is calculcated directly from the Space-Form screw
 % axes, _S_, and the joint positions, _q_
@@ -89,10 +91,11 @@ fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
 % Kuka LBR example:
 Jacob_space = J_space(S,q);
 
+disp('=============================================')
 fprintf('\tJ_space:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_space.')
-
+disp('=============================================')
 %%
 % *Body Form* Jacobian is similarly calculated from the Body-From screw
 % axes, _B_, and the joint positions, _q_
@@ -102,10 +105,11 @@ fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
 % Kuka LBR example:
 Jacob_body = J_body(B,q);
 
+disp('=============================================')
 fprintf('\tJ_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_body.')
-
+disp('=============================================')
 %% PA.h - Inverse Kinematics
 % Inverse kinematics uses the Newton Raphson Method to calculate the
 % joint positions required to achieve an end effector pose, specified by
@@ -115,30 +119,48 @@ fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
 %
 % Kuka LBR example:
 
-% TODO
-%% PA.i - Transpose Kinematics
-% Transpose kinematics uses closed loop control with a weighted matrix
-% controller in order to find the joint positions required to achieve an
-% end effector pose, specified by Tsd
-%
-% <include>src/J_transpose_kinematics.m</include>
-%
-% Kuka LBR example:
+Tsd = T_space; % target pose from Forward-Kinematics example
 
-T_sd = T_space; % target pose from Forward-Kinematics example
-
-q_guess = q / norm(q) + rand(size(q)); % randomized initial guess
-q_ik = J_inverse_kinematics(M,B,q_guess,T_sd);
+q_guess = rand(size(q)); % randomized initial guess
+q_ik = J_inverse_kinematics(M,B,q_guess,Tsd);
 
 T_J_inv_kin = FK_body(M,B,q_ik);
 
 disp('=============================================')
 fprintf('\tTarget Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_sd.')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
-disp('=============================================')
 fprintf('\tDerived Pose:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_J_inv_kin.')
+disp('=============================================')
+
+%% PA.i - Transpose Kinematics
+% Transpose kinematics uses closed loop control with a weighted matrix
+% controller in order to find the joint positions required to achieve an
+% end effector pose, specified by Tsd. Because this method takes longer to
+% become accurate, the tolerance level was raised.
+%
+% <include>src/J_transpose_kinematics.m</include>
+%
+% Kuka LBR example:
+
+q_guess = q / norm(q) + rand(size(q)); % randomized initial guess
+q_ik = J_transpose_kinematics(M,B,q_guess,Tsd);
+
+T_J_tran_kin = FK_body(M,B,q_ik);
+
+disp('=============================================')
+fprintf('\tTarget Pose:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
+
+fprintf('\tDerived Pose:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_J_tran_kin.')
+disp('=============================================')
+
+
+%% PA.j - Redundancy Resolution
+
+
 %% UNIT TEST Documentation
 % Unit Test class inherits from the matlab UnitTests class.
 %
