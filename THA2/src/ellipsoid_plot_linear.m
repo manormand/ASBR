@@ -45,6 +45,6 @@ hold on
 rotate(h, w_calc, D);
 axis equal
 
-ellip_lin = V;
+ellip_lin = [V d];
 end
 
