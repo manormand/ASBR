@@ -37,7 +37,7 @@ S = [   0    0 0       0 0            0 0;
         0    0 0       0 0            0 0;
         0    0 0       0 0            0 0];
 
-T_space = FK_space(M,S,q);
+T_space = FK_space(M,S,q, true);
 
 fprintf('\tT_space:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
