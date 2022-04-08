@@ -6,7 +6,7 @@ arguments
     q (:,1)        % Initial joint positions
     Tsd (4,4)      % Desired final pose
     tol_w = 0.001  % orientation tolerance in rad
-    tol_v = 0.001 % distance tolerance in m
+    tol_v = 0.0001 % distance tolerance in m
 end
 
 outside_tolerance = @(Vb) norm(Vb(1:3)) > tol_w || norm(Vb(4:6)) > tol_v;
