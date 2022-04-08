@@ -9,7 +9,8 @@ classdef PA2UnitTests < matlab.unittest.TestCase
     %   FK_body_WAM_7R - Test for FK_body
     %   J_space_RRRP - Test for J_space
     %   J_body_4R - Test for J_body
-    %   J_inv_kinematics_simple - Test for J_inverse_kinematics
+    %   J_inv_kin_simple - Test for J_inverse_kinematics
+    %   J_inv_tran_simple - Test for J_transpose_kinematics
 
     properties
         tol = 0.0001; % Desired tolerance for tests
@@ -182,7 +183,7 @@ classdef PA2UnitTests < matlab.unittest.TestCase
                         "AbsTol", test_case.tol)
         end
 
-        function J_inv_kinematics_simple( test_case )
+        function J_inv_kin_simple( test_case )
             % simple test case for inverse kinematics
             %   Example from Lecture W8-1
             %
@@ -196,6 +197,27 @@ classdef PA2UnitTests < matlab.unittest.TestCase
                     0 0 0 1];
             
             q = J_inverse_kinematics(M,B,[0,pi/6]',Tsd);
+            
+            T_calc = FK_body(M,B,q);
+
+            % check if equivalent
+            verifyEqual(test_case, T_calc, Tsd, 'AbsTol', test_case.tol)
+        end
+
+        function J_tran_kin_simple( test_case )
+            % simple test case for inverse kinematics
+            %   Example from Lecture W8-1
+            %
+            %   See also J_transpose_kinematics
+            M = eye(4); M(1,4) = 2;
+            B = [[0 0 1 0 2 0]' [0 0 1 0 1 0]'];
+            
+            Tsd = [-0.5 -0.866 0 0.366;
+                    0.866 -0.5 0 1.366;
+                    0 0 1 0;
+                    0 0 0 1];
+            
+            q = J_transpose_kinematics(M,B,[0,pi/6]',Tsd);
             
             T_calc = FK_body(M,B,q);
 
