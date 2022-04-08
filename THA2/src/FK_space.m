@@ -13,7 +13,7 @@ function T = FK_space(M,S,q)
 arguments
     M (4,4)
     S (6,:)
-    q
+    q (:,1)
 end
 
 T = eye(4);

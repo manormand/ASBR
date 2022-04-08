@@ -12,7 +12,7 @@ function T = FK_body(M,B,q)
 arguments
     M (4,4)
     B (6,:)
-    q
+    q (:,1)
 end
 
 T = M;

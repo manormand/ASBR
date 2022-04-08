@@ -12,7 +12,7 @@ classdef PA2UnitTests < matlab.unittest.TestCase
     %   J_inv_kinematics_simple - Test for J_inverse_kinematics
 
     properties
-        tol = 0.001; % Desired tolerance for tests
+        tol = 0.0001; % Desired tolerance for tests
     end
 
     methods (Test)

@@ -10,7 +10,7 @@ function J = J_body(B, q)
 
 arguments
     B (6,:)
-    q
+    q (:,1)
 end
 
 J = B;

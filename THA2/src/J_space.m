@@ -10,7 +10,7 @@ function J = J_space(S, q)
 
 arguments 
     S (6,:)
-    q
+    q (:,1)
 end
 
 
