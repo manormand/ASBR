@@ -35,7 +35,15 @@ V2 = V2/norm(V2)*d(2);
 V3 = V3/norm(V3)*d(3);
 V = [V1,V2,V3];
 
+[w_calc, th_calc] = Rotation.rotm2axangle(V);
+D = rad2deg(th_calc);
+
 %plot 
+[X,Y,Z] = ellipsoid(0,0,0,d(1),d(2),d(3));
+h = surf(X,Y,Z);
+hold on
+rotate(h, w_calc, D);
+axis equal
 
 ellip_lin = V;
 end
