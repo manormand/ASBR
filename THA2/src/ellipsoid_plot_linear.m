@@ -1,4 +1,4 @@
-function ellip_lin = ellipsoid_plot_linear(S, q)
+function ellip_lin = ellipsoid_plot_linear(B, q)
 % ellipsoid_plot_angular calculates the jacobian, then calculates the 
 % eigenvalues and eigenvectors, and uses the eigenvectors as the direction
 % of the principle aes of the linear ellipsoid and uses the the sqrt of 
@@ -13,12 +13,12 @@ function ellip_lin = ellipsoid_plot_linear(S, q)
 %   See also J_space
 
 arguments
-    S (6,:)        % Skew Axes in Space Frame
+    B (6,:)        % Skew Axes in Body Frame
     q (1,:)        % Initial joint positions
 end
 
 % Get the jacobian and its transpose
-j = J_space(S,q);
+j = J_body(B,q);
 j = j(4:6,1:7);
 jtrans = j.';
 A = j*jtrans;

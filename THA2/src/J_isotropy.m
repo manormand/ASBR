@@ -1,4 +1,4 @@
-function J_iso = J_isotropy(S, q)
+function J_iso = J_isotropy(S,B,q)
 %  J_isotropy calculates the jacobian, then calculates the eigenvalues and
 % used it to calculate the ratio of the longest abd shortest semi-axes of 
 % the angular and linear manipulability ellipsoid 
@@ -11,14 +11,16 @@ function J_iso = J_isotropy(S, q)
 %   See also J_space
 
 arguments
-    S (6,:)        % Skew Axes in Space Frame
+    S (6,:)        % Skew Axes in Space Frame 
+    B (6,:)        % Skew Axes in Body Frame
     q (1,:)        % Initial joint positions
 end
 
 % Get the jacobian and its transpose
-j = J_space(S,q);
-ja = j(1:3,1:7);
-jl = j(4:6,1:7);
+js = J_space(S,q);
+jb = J_body(B,q);
+ja = js(1:3,1:7);
+jl = jb(4:6,1:7);
 jtransa = ja.';
 jtransl = jl.';
 A_a = ja*jtransa;

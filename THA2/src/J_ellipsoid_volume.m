@@ -1,4 +1,4 @@
-function J_vol = J_ellipsoid_volume(S, q)
+function J_vol = J_ellipsoid_volume(S,B, q)
 %  J_ellipsoid_volume calculates the volume of the manipulabilty 
 % ellipsoid 
 %
@@ -10,14 +10,16 @@ function J_vol = J_ellipsoid_volume(S, q)
 %   See also J_space
 
 arguments
-    S (6,:)        % Skew Axes in Space Frame
+    S (6,:)        % Skew Axes in Space Frame 
+    B (6,:)        % Skew Axes in Body Frame
     q (1,:)        % Initial joint positions
 end
 
 % Get the jacobian and its transpose
-j = J_space(S,q);
-ja = j(1:3,1:7);
-jl = j(4:6,1:7);
+js = J_space(S,q);
+jb = J_body(B,q);
+ja = js(1:3,1:7);
+jl = jb(4:6,1:7);
 jtransa = ja.';
 jtransl = jl.';
 A_a = ja*jtransa;
