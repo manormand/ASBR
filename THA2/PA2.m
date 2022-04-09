@@ -166,8 +166,8 @@ ellip_lin = ellipsoid_plot_linear(S, q);
 J_iso = J_isotropy(S,B,q);
 
 disp('=============================================')
-fprintf('\tJ_isotropy:\n')
-disp(J_iso)
+disp('J_isotropy')
+fprintf('Rotational: % .3f Linear: % .3f\n', J_iso(1), J_iso(2))
 disp('=============================================')
 
 %%
@@ -181,8 +181,8 @@ disp('=============================================')
 J_con = J_condition(S,B,q);
 
 disp('=============================================')
-fprintf('\tJ_condition:\n')
-disp(J_con)
+disp('J_condition')
+fprintf('Rotational: % .3f Linear: % .3f\n', J_con(1), J_con(2))
 disp('=============================================')
 
 %%
@@ -196,8 +196,8 @@ disp('=============================================')
 J_vol = J_ellipsoid_volume(S,B,q);
 
 disp('=============================================')
-fprintf('\tJ_ellipsoid_volume:\n')
-disp(J_vol)
+disp('J_ellipsoid_volume')
+fprintf('Rotational: % .3f Linear: % .3f\n', J_vol(1), J_vol(2))
 disp('=============================================')
 
 
