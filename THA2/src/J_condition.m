@@ -26,10 +26,10 @@ A_a = ja*jtransa;
 A_l = jl*jtransl;
 
 % calculate the eigenvector and eigenvalues for the linear and angular case
-[V_a,D_a] = eig(A_a);
-[V_l,D_l] = eig(A_l);
-[d_a,ind_a] = sort(diag(D_a));
-[d_l,ind_l] = sort(diag(D_l));
+[~,D_a] = eig(A_a);
+[~,D_l] = eig(A_l);
+[d_a,~] = sort(diag(D_a));
+[d_l,~] = sort(diag(D_l));
 
 %calculate the isotropy
 if(min(d_a)~=0 && min(d_l)~=0 )

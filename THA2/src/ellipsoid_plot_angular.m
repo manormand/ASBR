@@ -25,7 +25,7 @@ A = j*jtrans;
 
 % calculate the eigenvector and eigenvalues for the angular case
 [V,D] = eig(A);
-[d,ind] = sort(diag(D));
+[d,~] = sort(diag(D));
 d = sqrt(d);
 V1 = V(1:3,1);
 V2 = V(1:3,2);

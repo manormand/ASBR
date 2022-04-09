@@ -59,10 +59,10 @@ S = [   0    0 0       0 0            0 0;
 
 T_space = FK_space(M,S,q, true);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('T_space:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
-disp('=============================================')
+disp('============================================================')
 %% PA.c - Body Form Forward Kinematics
 % The function FK_body accepts any serial chain specified in body-form
 % screw axes. This function returns the end effector pose only.
@@ -83,10 +83,10 @@ B = [   0           0 0        0 0   0 0;
 
 T_body = FK_body(M,B,q);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('T_body:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
-disp('=============================================')
+disp('============================================================')
 
 %% PA.e - Jacobians
 % *Space Form* Jacobian is calculcated directly from the Space-Form screw
@@ -99,11 +99,12 @@ disp('=============================================')
 % Kuka LBR example:
 Jacob_space = J_space(S,q);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('J_space:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_space.')
-disp('=============================================')%%
+disp('============================================================')
+%%
 % *Body Form* Jacobian is similarly calculated from the Body-From screw
 % axes, _B_, and the joint positions, _q_.
 %
@@ -114,17 +115,19 @@ disp('=============================================')%%
 % Kuka LBR example:
 Jacob_body = J_body(B,q);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('J_body:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_body.')
-disp('=============================================')
+disp('============================================================')
 %% PA.f - singularity.m
 % The function singularity.m accepts any serial chain specified in space-form
 % screw axes and a set of angles q and return whether the configuration is
 % in a singularity 
 %
 % <include> src/singularity.m </include>
+%
+% ------------------------------------------------------------------------
 %
 % Kuka LBR example:
 sing = singularity(S, q); 
@@ -134,14 +137,14 @@ else
     disp('No singularity')
 end
 
-
-
 %% PA.g - Manipulabilty 
 % *ellipsoid_plot_angular* The function ellipsoid_plot_angular.m accepts any serial chain specified in space-form
 % screw axes and a set of angles q and returns a angular manipulabilty
 % elipse plot
 % 
 % <include> src/ellipsoid_plot_angular.m </include>
+%
+% ------------------------------------------------------------------------
 %
 % Kuka LBR example:
 ellipang = ellipsoid_plot_angular(S, q);
@@ -153,6 +156,8 @@ ellipang = ellipsoid_plot_angular(S, q);
 %
 % <include> src/ellipsoid_plot_linear.m </include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 ellip_lin = ellipsoid_plot_linear(S, q);
 
@@ -162,13 +167,15 @@ ellip_lin = ellipsoid_plot_linear(S, q);
 %
 % <include> src/J_isotropy.m </include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 J_iso = J_isotropy(S,B,q);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('\tJ_isotropy:\n')
 disp(J_iso)
-disp('=============================================')
+disp('============================================================')
 
 %%
 % *J_condition* The function J_condition.m accepts any serial chain specified
@@ -177,13 +184,15 @@ disp('=============================================')
 %
 % <include> src/J_condition.m </include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 J_con = J_condition(S,B,q);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('\tJ_condition:\n')
 disp(J_con)
-disp('=============================================')
+disp('============================================================')
 
 %%
 % *J_ellipsoid_volume* The function J_ellipsoid_volume.m accepts any serial chain specified
@@ -192,20 +201,15 @@ disp('=============================================')
 %
 % <include> src/J_ellipsoid_volume.m </include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 J_vol = J_ellipsoid_volume(S,B,q);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('\tJ_ellipsoid_volume:\n')
 disp(J_vol)
-disp('=============================================')
-
-
-
-
-
-
-
+disp('============================================================')
 
 %% PA.h - Inverse Kinematics
 % Inverse kinematics uses the Newton Raphson Method to calculate the
@@ -225,13 +229,13 @@ q_ik = J_inverse_kinematics(M,B,q_guess,Tsd);
 
 T_J_inv_kin = FK_body(M,B,q_ik);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('Target Pose:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
 fprintf('J_inverse_kinematitcs:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_J_inv_kin.')
-disp('=============================================')
+disp('============================================================')
 
 %% PA.i - Transpose Kinematics
 % Transpose kinematics uses closed loop control with a weighted matrix
@@ -250,13 +254,13 @@ q_ik = J_transpose_kinematics(M,B,q_guess,Tsd);
 
 T_J_tran_kin = FK_body(M,B,q_ik);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('Target Pose:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
 fprintf('J_transpose_kinematics:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_J_tran_kin.')
-disp('=============================================')
+disp('============================================================')
 
 
 %% PA.j - Redundancy Resolution
@@ -275,13 +279,13 @@ q_ik = redundancy_resolution(M,B,q_guess,Tsd);
 
 T_red_res = FK_body(M,B,q_ik);
 
-disp('=============================================')
+disp('============================================================')
 fprintf('Target Pose:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
 fprintf('redundancy_resolution:\n')
 fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_red_res.')
-disp('=============================================')
+disp('============================================================')
 
 %% PA.m - Kuka Graphical Sim
 % Using the MATLAB Robotics toolbox we can also directly import the KUKA
@@ -292,9 +296,12 @@ lbr.DataFormat = 'row';
 gripper = 'iiwa_link_ee_kuka';
 config = randomConfiguration(lbr);
 show(lbr,config);
+    xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
+    title('KUKA LBR iiwa 14')
 
 
 %% UNIT TEST Documentation
-% Unit Test class inherits from the matlab UnitTests class.
+% Unit Test class inherits from the matlab UnitTests class. In this class
+% we test for all of the required funcitons.
 %
 % <include>PA2UnitTests.m</include>
