@@ -40,8 +40,8 @@ q = deg2rad([20 -10 30 0 -30 45 0]');
 
 %% PA.b - Space Form Forward Kinematics
 % The function FK_space accepts any serial chain specified in space-form
-% screw axes. FK_space returns the end effector pose and it also plots the 
-% serial chain in 3d space if specified. 
+% screw axes. FK_space returns the end effector pose and it also plots the
+% serial chain in 3d space if specified.
 %
 % <include>src/FK_space.m</include>
 %
@@ -123,25 +123,25 @@ disp('============================================================')
 %% PA.f - singularity.m
 % The function singularity.m accepts any serial chain specified in space-form
 % screw axes and a set of angles q and return whether the configuration is
-% in a singularity 
+% in a singularity
 %
 % <include> src/singularity.m </include>
 %
 % ------------------------------------------------------------------------
 %
 % Kuka LBR example:
-sing = singularity(S, q); 
-if sing 
+sing = singularity(S, q);
+if sing
    disp('We are in a singularity')
 else
     disp('No singularity')
 end
 
-%% PA.g - Manipulabilty 
+%% PA.g - Manipulabilty
 % *ellipsoid_plot_angular* The function ellipsoid_plot_angular.m accepts any serial chain specified in space-form
 % screw axes and a set of angles q and returns a angular manipulabilty
 % elipse plot
-% 
+%
 % <include> src/ellipsoid_plot_angular.m </include>
 %
 % ------------------------------------------------------------------------
@@ -173,8 +173,8 @@ ellip_lin = ellipsoid_plot_linear(S, q);
 J_iso = J_isotropy(S,B,q);
 
 disp('============================================================')
-fprintf('\tJ_isotropy:\n')
-disp(J_iso)
+disp('J_isotropy')
+fprintf('Rotational: % .3f Linear: % .3f\n', J_iso(1), J_iso(2))
 disp('============================================================')
 
 %%
@@ -190,14 +190,14 @@ disp('============================================================')
 J_con = J_condition(S,B,q);
 
 disp('============================================================')
-fprintf('\tJ_condition:\n')
-disp(J_con)
+disp('J_condition')
+fprintf('Rotational: % .3f Linear: % .3f\n', J_con(1), J_con(2))
 disp('============================================================')
 
 %%
 % *J_ellipsoid_volume* The function J_ellipsoid_volume.m accepts any serial chain specified
 % in space-form and body-form screw axes and a set of angles q and returns
-% volume of the two ellipsoids 
+% volume of the two ellipsoids
 %
 % <include> src/J_ellipsoid_volume.m </include>
 %
@@ -207,8 +207,8 @@ disp('============================================================')
 J_vol = J_ellipsoid_volume(S,B,q);
 
 disp('============================================================')
-fprintf('\tJ_ellipsoid_volume:\n')
-disp(J_vol)
+disp('J_ellipsoid_volume')
+fprintf('Rotational: % .3f Linear: % .3f\n', J_vol(1), J_vol(2))
 disp('============================================================')
 
 %% PA.h - Inverse Kinematics
