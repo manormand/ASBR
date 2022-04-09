@@ -60,8 +60,8 @@ S = [   0    0 0       0 0            0 0;
 T_space = FK_space(M,S,q, true);
 
 disp('=============================================')
-fprintf('\tT_space:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
+fprintf('T_space:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
 disp('=============================================')
 %% PA.c - Body Form Forward Kinematics
 % The function FK_body accepts any serial chain specified in body-form
@@ -84,8 +84,8 @@ B = [   0           0 0        0 0   0 0;
 T_body = FK_body(M,B,q);
 
 disp('=============================================')
-fprintf('\tT_body:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
+fprintf('T_body:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
 disp('=============================================')
 %% PA.e - Jacobians
 % *Space Form* Jacobian is calculcated directly from the Space-Form screw
@@ -99,8 +99,8 @@ disp('=============================================')
 Jacob_space = J_space(S,q);
 
 disp('=============================================')
-fprintf('\tJ_space:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
+fprintf('J_space:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_space.')
 disp('=============================================')
 %%
@@ -115,8 +115,8 @@ disp('=============================================')
 Jacob_body = J_body(B,q);
 
 disp('=============================================')
-fprintf('\tJ_body:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
+fprintf('J_body:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_body.')
 disp('=============================================')
 %% PA.h - Inverse Kinematics
@@ -138,11 +138,11 @@ q_ik = J_inverse_kinematics(M,B,q_guess,Tsd);
 T_J_inv_kin = FK_body(M,B,q_ik);
 
 disp('=============================================')
-fprintf('\tTarget Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
+fprintf('Target Pose:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
-fprintf('\tDerived Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_J_inv_kin.')
+fprintf('J_inverse_kinematitcs:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_J_inv_kin.')
 disp('=============================================')
 
 %% PA.i - Transpose Kinematics
@@ -163,11 +163,11 @@ q_ik = J_transpose_kinematics(M,B,q_guess,Tsd);
 T_J_tran_kin = FK_body(M,B,q_ik);
 
 disp('=============================================')
-fprintf('\tTarget Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
+fprintf('Target Pose:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
-fprintf('\tDerived Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_J_tran_kin.')
+fprintf('J_transpose_kinematics:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_J_tran_kin.')
 disp('=============================================')
 
 
@@ -188,11 +188,11 @@ q_ik = redundancy_resolution(M,B,q_guess,Tsd);
 T_red_res = FK_body(M,B,q_ik);
 
 disp('=============================================')
-fprintf('\tTarget Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
+fprintf('Target Pose:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
 
-fprintf('\tDerived Pose:\n')
-fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_red_res.')
+fprintf('redundancy_resolution:\n')
+fprintf('\t[ % .3f % .3f % .3f % .3f ]\n', T_red_res.')
 disp('=============================================')
 
 %% PA.m - Kuka Graphical Sim
