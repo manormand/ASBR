@@ -11,7 +11,9 @@ classdef PA2UnitTests < matlab.unittest.TestCase
     %   J_body_4R - Test for J_body
     %   singular_true - Test for singularity at a singularity
     %   singular_false - Test for singularity not at a singularity
-    %   ellipse_condition_KUKA_iiwa7 - 
+    %   ellipse_condition_KUKA_iiwa7 - test for J_condition
+    %   ellipse_isotropy_KUKA_iiwa7 - test for J_isotropy
+    %   ellipse_volume_KUKA_iiwa7 - test for J_ellipsoid_volume
     %   J_inv_kin_simple - Test for J_inverse_kinematics
     %   J_inv_tran_simple - Test for J_transpose_kinematics
     %   redundant_reso_simple - Test for redundancy_resolution
