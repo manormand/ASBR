@@ -39,12 +39,14 @@ V = [V1,V2,V3];
 D = rad2deg(th_calc);
 
 %plot 
+figure()
 [X,Y,Z] = ellipsoid(0,0,0,d(1),d(2),d(3));
 h = surf(X,Y,Z);
 hold on
 rotate(h, w_calc, D);
 axis equal
+hold off 
 
-ellip_lin = [V d];
+ellip_lin = 'ellipsoid_plot_linear';
 end
 

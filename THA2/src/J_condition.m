@@ -4,6 +4,7 @@ function J_con = J_condition(S,B, q)
 % Use:
 % J_con = J_condition(S, q)
 %   - S is a 6xn matrix of the Space-Form Screw Axes for each join
+%   - B is a 6xn matrix of the Body-Form Screw Axes for each join
 %   - q is a n-element array of the joint positions
 %
 %   See also J_space

@@ -82,9 +82,6 @@ disp('=============================================')
 fprintf('\tT_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
 disp('=============================================')
-%% PA.f - singularity.m
-% The function singularity.m accepts any serial chain specified in space-form
-% screw axes and a set of angles q 
 
 %% PA.e - Jacobians
 % *Space Form* Jacobian is calculcated directly from the Space-Form screw
@@ -99,8 +96,7 @@ disp('=============================================')
 fprintf('\tJ_space:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_space.')
-disp('=============================================')
-%%
+disp('=============================================')%%
 % *Body Form* Jacobian is similarly calculated from the Body-From screw
 % axes, _B_, and the joint positions, _q_
 %
@@ -114,6 +110,94 @@ fprintf('\tJ_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
         Jacob_body.')
 disp('=============================================')
+%% PA.f - singularity.m
+% The function singularity.m accepts any serial chain specified in space-form
+% screw axes and a set of angles q and return whether the configuration is
+% in a singularity 
+%
+% <include> src/singularity.m </include>
+%
+% Kuka LBR example:
+sing = singularity(S, q); 
+if sing 
+   disp('We are in a singularity')
+else
+    disp('No singularity')
+end
+
+
+
+%% PA.g - Manipulabilty 
+% *ellipsoid_plot_angular* The function ellipsoid_plot_angular.m accepts any serial chain specified in space-form
+% screw axes and a set of angles q and returns a angular manipulabilty
+% elipse plot
+% 
+% <include> src/ellipsoid_plot_angular.m </include>
+%
+% Kuka LBR example:
+ellipang = ellipsoid_plot_angular(S, q);
+
+%%
+% *ellipsoid_plot_linear* The function ellipsoid_plot_linear.m accepts any serial chain specified in body-form
+% screw axes and a set of angles q and returns a linear manipulabilty
+% elipse plot
+%
+% <include> src/ellipsoid_plot_linear.m </include>
+%
+% Kuka LBR example:
+ellip_lin = ellipsoid_plot_linear(S, q);
+
+%%
+% *J_isotropy* The function J_isotropy.m accepts any serial chain specified
+% in space-form and body-form screw axes and a set of angles q and returns isotropy
+%
+% <include> src/J_isotropy.m </include>
+%
+% Kuka LBR example:
+J_iso = J_isotropy(S,B,q);
+
+disp('=============================================')
+fprintf('\tJ_isotropy:\n')
+disp(J_iso)
+disp('=============================================')
+
+%%
+% *J_condition* The function J_condition.m accepts any serial chain specified
+% in space-form and body-form screw axes and a set of angles q and returns
+% condition number
+%
+% <include> src/J_condition.m </include>
+%
+% Kuka LBR example:
+J_con = J_condition(S,B,q);
+
+disp('=============================================')
+fprintf('\tJ_condition:\n')
+disp(J_con)
+disp('=============================================')
+
+%%
+% *J_ellipsoid_volume* The function J_ellipsoid_volume.m accepts any serial chain specified
+% in space-form and body-form screw axes and a set of angles q and returns
+% volume of the two ellipsoids 
+%
+% <include> src/J_ellipsoid_volume.m </include>
+%
+% Kuka LBR example:
+J_vol = J_ellipsoid_volume(S,B,q);
+
+disp('=============================================')
+fprintf('\tJ_ellipsoid_volume:\n')
+disp(J_vol)
+disp('=============================================')
+
+
+
+
+
+
+
+
 %% PA.h - Inverse Kinematics
 % Inverse kinematics uses the Newton Raphson Method to calculate the
 % joint positions required to achieve an end effector pose, specified by

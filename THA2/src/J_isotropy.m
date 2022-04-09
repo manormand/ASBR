@@ -6,6 +6,7 @@ function J_iso = J_isotropy(S,B,q)
 % Use:
 % J_iso = J_isotropy(S, q)
 %   - S is a 6xn matrix of the Space-Form Screw Axes for each join
+%   - B is a 6xn matrix of the Body-Form Screw Axes for each join
 %   - q is a n-element array of the joint positions
 %
 %   See also J_space
