@@ -2,7 +2,7 @@ function sing = singularity(S, q)
 % singularity calculates the jacobian, then calculates the rank and the
 % determinant to check if the current configuration is in a singularity
 % position
-% 
+%
 %
 % Use:
 % sing = singularity(S, q)
@@ -26,9 +26,6 @@ jrank = rank(A);
 % use the determinant and rank to check if the A matrix is singular
 if (jdet == 0 || jrank ~= 6)
     sing = true;
-else 
+else
     sing =  false;
 end
-
-
-
