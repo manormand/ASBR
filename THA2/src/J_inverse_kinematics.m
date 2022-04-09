@@ -1,7 +1,7 @@
 function [q_des, itered_out] = J_inverse_kinematics(M, B, q, Tsd, tol_w, tol_v, max_iter)
 % J_inverse_kinematics Control robot from config a to b
-%   This function uses the numerical inverse kinematics algorithm to
-%   control the robot from config a to b
+%   This function uses the Newton Raphson Method to locate
+%   the joint positions required for the desired position, Tsd
 %
 % Use:
 % q_des = J_inverse_kinematics(M, B, q0, Tsd)
@@ -16,6 +16,8 @@ function [q_des, itered_out] = J_inverse_kinematics(M, B, q, Tsd, tol_w, tol_v, 
 %   - tol_v is the linear tolerance (default 0.0001)
 %   - max_iter is the maximum iterations allowed (default 100)
 %   - itered_out shows if the maximum iterations limit was reached
+%
+%   See also J_transpose_kinematics, redundancy_resolution
 
 arguments
     M (4,4)        % Home postition of end effector
@@ -24,7 +26,7 @@ arguments
     Tsd (4,4)      % Desired final pose
     tol_w double = 0.001   % orientation tolerance in rad
     tol_v double = 0.0001  % distance tolerance in m
-    max_iter int32 = 500     % Maximum iterations allowed
+    max_iter int32 = 250     % Maximum iterations allowed
 end
 
 % define tolerance function

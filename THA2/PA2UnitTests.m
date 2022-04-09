@@ -9,8 +9,12 @@ classdef PA2UnitTests < matlab.unittest.TestCase
     %   FK_body_WAM_7R - Test for FK_body
     %   J_space_RRRP - Test for J_space
     %   J_body_4R - Test for J_body
+    %   singular_true - Test for singularity at a singularity
+    %   singular_false - Test for singularity not at a singularity
+    %   J_iso_
     %   J_inv_kin_simple - Test for J_inverse_kinematics
     %   J_inv_tran_simple - Test for J_transpose_kinematics
+    %   redundant_reso_simple - Test for redundancy_resolution
 
     properties
         tol = 0.0001; % Desired tolerance for tests
@@ -183,6 +187,45 @@ classdef PA2UnitTests < matlab.unittest.TestCase
                         "AbsTol", test_case.tol)
         end
 
+        function singular_true( test_case )
+            % test coplanar robot for singularity
+            
+            S = [[0 0 1 0 0 0]',[0 0 1 0.5 0 0]', [0 0 1 1 0 0]'];
+            q = [0 0 0]';
+
+            sing = singularity(S,q);
+            verifyTrue(test_case, sing);
+        end
+
+        function singular_false( test_case )
+            % test coplanar robot for singularity
+            
+             % Define variables arbitrarily
+            L1 = 2.0;
+            L2 = 2.5;
+            q = deg2rad([15 20 30 0]);
+            q(4) = 1.5;   % in m
+
+            % Define Screw Axes
+            w1 = [1 0 0]';
+            v1 = [0 0 0]';
+
+            w2 = [0 0 1]';
+            v2 = [0 -L1 0]';
+
+            w3 = [0 1 0]';
+            v3 = [-L1-L2 0 0]';
+
+            w4 = [0 0 0]';
+            v4 = [0 0 1]';
+
+            S = [ w1 w2 w3 w4;
+                  v1 v2 v3 v4];
+
+            sing = singularity(S,q);
+            verifyFalse(test_case, sing);
+        end
+
         function J_inv_kin_simple( test_case )
             % simple test case for inverse kinematics
             %   Example from Lecture W8-1
@@ -218,6 +261,27 @@ classdef PA2UnitTests < matlab.unittest.TestCase
                     0 0 0 1];
             
             q = J_transpose_kinematics(M,B,[0,pi/6]',Tsd);
+            
+            T_calc = FK_body(M,B,q);
+
+            % check if equivalent
+            verifyEqual(test_case, T_calc, Tsd, 'AbsTol', test_case.tol)
+        end
+
+        function redundant_reso_simple( test_case )
+            % simple test case for inverse kinematics
+            %   Example from Lecture W8-1
+            %
+            %   See also J_transpose_kinematics
+            M = eye(4); M(1,4) = 2;
+            B = [[0 0 1 0 2 0]' [0 0 1 0 1 0]'];
+            
+            Tsd = [-0.5 -0.866 0 0.366;
+                    0.866 -0.5 0 1.366;
+                    0 0 1 0;
+                    0 0 0 1];
+            
+            q = redundancy_resolution(M,B,[0,pi/6]',Tsd);
             
             T_calc = FK_body(M,B,q);
 
