@@ -82,6 +82,10 @@ disp('=============================================')
 fprintf('\tT_body:\n')
 fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
 disp('=============================================')
+%% PA.f - singularity.m
+% The function singularity.m accepts any serial chain specified in space-form
+% screw axes and a set of angles q 
+
 %% PA.e - Jacobians
 % *Space Form* Jacobian is calculcated directly from the Space-Form screw
 % axes, _S_, and the joint positions, _q_
