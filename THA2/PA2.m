@@ -1,5 +1,5 @@
-%% HA2.m
-% Handwritten Assignment 2 - Supplemental code
+%% PA2.m
+% Programming Assignment 2 - Electric Boogaloo
 %
 %%
 clear; clc; close all;
@@ -40,7 +40,8 @@ q = deg2rad([20 -10 30 0 -30 45 0]');
 
 %% PA.b - Space Form Forward Kinematics
 % The function FK_space accepts any serial chain specified in space-form
-% screw axes
+% screw axes. FK_space returns the end effector pose and it also plots the 
+% serial chain in 3d space if specified. 
 %
 % <include>src/FK_space.m</include>
 %
@@ -62,7 +63,7 @@ fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_space.')
 disp('=============================================')
 %% PA.c - Body Form Forward Kinematics
 % The function FK_body accepts any serial chain specified in body-form
-% screw axes
+% screw axes. This function returns the end effector pose only.
 %
 % <include>src/FK_body.m</include>
 %
@@ -84,7 +85,7 @@ fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_body.')
 disp('=============================================')
 %% PA.e - Jacobians
 % *Space Form* Jacobian is calculcated directly from the Space-Form screw
-% axes, _S_, and the joint positions, _q_
+% axes, _S_, and the joint positions, _q_.
 %
 % <include> src/J_space.m </include>
 %
@@ -98,7 +99,7 @@ fprintf('\t\t[ % .3f % .3f % .3f % .3f % .3f % .3f % .3f ]\n', ...
 disp('=============================================')
 %%
 % *Body Form* Jacobian is similarly calculated from the Body-From screw
-% axes, _B_, and the joint positions, _q_
+% axes, _B_, and the joint positions, _q_.
 %
 % <include> src/J_space.m </include>
 %

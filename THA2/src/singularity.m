@@ -17,18 +17,17 @@ arguments
 end
 
 % Get the jacobian and its inverse
-
 j = J_space(S,q);
 jtrans = j.';
 A = j*jtrans;
-jdet= det(A);
+jdet = det(A);
 jrank = rank(A);
-% use the determinant and rank to check if the A matrix is singular
 
+% use the determinant and rank to check if the A matrix is singular
 if (jdet == 0 || jrank ~= 6)
-    sing = 'Current configurtion is in a singularity';
+    sing = true;
 else 
-    sing =  'Current configurtion is fine';
+    sing =  false;
 end
 
 
