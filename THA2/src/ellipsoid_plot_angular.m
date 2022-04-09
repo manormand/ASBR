@@ -43,6 +43,7 @@ figure()
 h = surf(X,Y,Z);
 hold on
 rotate(h, w_calc, D);
+title('ellipsoid plot angular')
 axis equal
 hold off
 
