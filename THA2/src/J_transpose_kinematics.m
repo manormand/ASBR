@@ -1,4 +1,25 @@
-function q_des = J_transpose_kinematics(M,B,q,Tsd, tol_w, tol_v)
+function [q_des, itered_out] = J_transpose_kinematics(M,B,q,Tsd, tol_w, tol_v, max_iter)
+% J_transpose_kinematics Control robot from config a to b
+%   This function uses the numerical jacobian transpose algorithm to
+%   find the required joint positions to achieve an end effector postion of
+%   Tsd
+%
+% Use:
+% q_des = J_transpose_kinematics(M, B, q0, Tsd)
+%   - M is the home position of the robot, represented by a 4x4 T-Mat
+%   - B is the body frame screw axes in a 6xn matrix
+%   - q is the initial guess configuration in a column vector
+%   - Tsd is the desired final configuration
+%
+% Optional:
+% [q_des, itered_out] = J_transpose_kinematics(..., tol_w, tol_v, max_iter)
+%   - tol_w is the orientation tolerance (default 0.001)
+%   - tol_v is the linear tolerance (default 0.0001)
+%   - max_iter is the maximum iterations allowed (default 100)
+%   - itered_out shows if the maximum iterations limit was reached
+%
+%   See also J_inverse_kinematics, redundancy_resolution
+
 
 arguments
     M (4,4)        % Home postition of end effector
@@ -7,25 +28,36 @@ arguments
     Tsd (4,4)      % Desired final pose
     tol_w = 0.001  % orientation tolerance in rad
     tol_v = 0.0001 % distance tolerance in m
+    max_iter int32 = 250     % Maximum iterations allowed
 end
 
+% function for checking tolerance
 outside_tolerance = @(Vb) norm(Vb(1:3)) > tol_w || norm(Vb(4:6)) > tol_v;
 
+% init loop vals
+K = 0.1*eye(6);
+i = 0;
 
+% get current error
 Tbd = FK_body(M,B,q)\Tsd;
 [S, th] = tMat2ScrewAxis(Tbd);
 e = S*th;
 
-% alpha = [e, J*J'*e] * pinv([J*J'*e, J*J'*e]);
-K = 0.1*eye(6);
 
-while outside_tolerance(e)
+while outside_tolerance(e) && i < max_iter
     q = q + J_body(B,q)'*K*e;
 
+    % update twist
     Tbd = FK_body(M,B,q)\Tsd;
     [S, th] = tMat2ScrewAxis(Tbd);
     e = S*th;
-
+    
+    i = i+1;
 end
 
-q_des = q;
+% outputs
+q_des = wrapToPi(q);
+
+if nargin > 1
+    itered_out = i > max_iter;
+end

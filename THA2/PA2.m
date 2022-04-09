@@ -16,7 +16,7 @@ addpath("src\") % adds src directory containing functions
 results = runtests('PA2UnitTests.m');
 disp(results)
 
-%% robot params
+%% Robot Karams
 % These were defined from the paper TODO: Insert paper
 % d* is the z-length between joint segments, where joints are grouped into
 % couples of z-axis and y-axis revolute joints
@@ -45,6 +45,8 @@ q = deg2rad([20 -10 30 0 -30 45 0]');
 %
 % <include>src/FK_space.m</include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 
 % Space form Screw Axes
@@ -66,6 +68,8 @@ disp('=============================================')
 % screw axes. This function returns the end effector pose only.
 %
 % <include>src/FK_body.m</include>
+%
+% ------------------------------------------------------------------------
 %
 % Kuka LBR example:
 
@@ -89,6 +93,8 @@ disp('=============================================')
 %
 % <include> src/J_space.m </include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 Jacob_space = J_space(S,q);
 
@@ -103,6 +109,8 @@ disp('=============================================')
 %
 % <include> src/J_space.m </include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 Jacob_body = J_body(B,q);
 
@@ -114,9 +122,11 @@ disp('=============================================')
 %% PA.h - Inverse Kinematics
 % Inverse kinematics uses the Newton Raphson Method to calculate the
 % joint positions required to achieve an end effector pose, specified by
-% Tsd
+% Tsd.
 %
 % <include>src/J_inverse_kinematics.m</include>
+%
+% ------------------------------------------------------------------------
 %
 % Kuka LBR example:
 
@@ -139,13 +149,15 @@ disp('=============================================')
 % Transpose kinematics uses closed loop control with a weighted matrix
 % controller in order to find the joint positions required to achieve an
 % end effector pose, specified by Tsd. Because this method takes longer to
-% become accurate, the tolerance level was raised.
+% become accurate, we decreased the random number by a factor of 10.
 %
 % <include>src/J_transpose_kinematics.m</include>
 %
+% ------------------------------------------------------------------------
+%
 % Kuka LBR example:
 
-q_guess = q / norm(q) + rand(size(q)); % randomized initial guess
+q_guess = q + 0.1*rand(size(q)); % randomized initial guess
 q_ik = J_transpose_kinematics(M,B,q_guess,Tsd);
 
 T_J_tran_kin = FK_body(M,B,q_ik);
@@ -160,6 +172,38 @@ disp('=============================================')
 
 
 %% PA.j - Redundancy Resolution
+% Adding the manipulability as a second objective to the inverse kinematics
+% slows down the algorithm, but it is still fairly consistent in results.
+%
+% <include>src/redundancy_resolution</include>
+%
+% ------------------------------------------------------------------------
+%
+% Kuka LBR example:
+
+
+q_guess = rand(size(q)); % randomized initial guess
+q_ik = redundancy_resolution(M,B,q_guess,Tsd);
+
+T_red_res = FK_body(M,B,q_ik);
+
+disp('=============================================')
+fprintf('\tTarget Pose:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', Tsd.')
+
+fprintf('\tDerived Pose:\n')
+fprintf('\t\t[ % .3f % .3f % .3f % .3f ]\n', T_red_res.')
+disp('=============================================')
+
+%% PA.m - Kuka Graphical Sim
+% Using the MATLAB Robotics toolbox we can also directly import the KUKA
+% arm
+
+lbr = importrobot('iiwa14.urdf'); % 14 kg payload version
+lbr.DataFormat = 'row';
+gripper = 'iiwa_link_ee_kuka';
+config = randomConfiguration(lbr);
+show(lbr,config);
 
 
 %% UNIT TEST Documentation
