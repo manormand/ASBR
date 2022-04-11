@@ -1,6 +1,9 @@
-%% PA2.m
+%% ASBR - PA2.m
 % Programming Assignment 2 - Electric Boogaloo
 %
+% Authors: Pranav Kalyani, pk7683
+%          Michael Normand, man2837 
+% Date: April 04 2022
 %%
 clear; clc; close all;
 addpath("src\") % adds src directory containing functions
@@ -291,6 +294,7 @@ disp('============================================================')
 % Using the MATLAB Robotics toolbox we can also directly import the KUKA
 % arm
 
+figure()
 lbr = importrobot('iiwa14.urdf'); % 14 kg payload version
 lbr.DataFormat = 'row';
 gripper = 'iiwa_link_ee_kuka';
@@ -299,6 +303,25 @@ show(lbr,config);
     xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
     title('KUKA LBR iiwa 14')
 
+%% Helper functions
+% During formulation we used the following functions
+%
+% * Ad - Adjunt Matrix calculator
+% * rotm2axangle - change rotation matrix to axangle
+% * screwAxis2TMat - screw axis exponential
+% * tMat2ScrewAxis - transform matrix logarithm
+% * skewify - convert vector to skew symmetric matrix
+%
+% <include>src/Ad.m</include>
+%
+% <include>src/rotm2axangle.m</include>
+%
+% <include>src/screwAxis2TMat.m</include>
+%
+% <include>src/tMat2ScrewAxis.m</include>
+%
+% <include>src/skewify.m</include>
+%
 
 %% UNIT TEST Documentation
 % Unit Test class inherits from the matlab UnitTests class. In this class
