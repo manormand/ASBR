@@ -26,7 +26,7 @@ arguments
     tol_w double = 0.001   % orientation tolerance in rad
     tol_v double = 0.0001  % distance tolerance in m
     max_iter int32 = 250     % Maximum iterations allowed
-    frame_rate = 30
+    frame_rate = 10
 end
 
 % load robot
@@ -107,7 +107,9 @@ while outside_tolerance(Vb) && i < max_iter
     i = i+1;
 
     % animation stuff
-    updateAllPlots(lbr, M, B,q, axr, h_lin, h_ang, textr)
+    updateRobot(lbr, q, axr)
+    updateEllipsoids(h_lin, h_ang, B, q)
+    updateTexts(textr, M, B, q)
 
     pause(dt)
     drawnow limitrate % dont draw, just wait til the end
@@ -118,18 +120,40 @@ end
 drawnow % now show animation
 end
 
-function updateAllPlots(robot, M, B, q, axr, h_linear, h_angular, textr)
-% updates all figures/texts and makes life easy
 
-% robot
-axes(axr)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HELPER FUNCS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function updateRobot(robot, q, axr)
+% Update robot plot!
+
+axes(axr) % makes the current subplot the robot one
 show(robot,q, FastUpdate=true, PreservePlot=false);
 
-% ellipses
-updateEllipsoid(h_linear, B, q, "line")
-updateEllipsoid(h_angular, B, q, "angle")
+end
 
-% text
+function updateEllipsoids(h_lin, h_ang,B,q)
+% Updates all elipsoids!
+[dl,wl,thl] = ellipsoid_plot_linear(B,q,false);
+[da,wa,tha] = ellipsoid_plot_angular(B,q,false);
+
+[X,Y,Z] = ellipsoid(0,0,0,dl(1),dl(2),dl(3));
+set(h_lin, 'XData', X);
+set(h_lin, 'YData', Y);
+set(h_lin, 'ZData', Z);
+
+[X,Y,Z] = ellipsoid(0,0,0,da(1),da(2),da(3));
+set(h_ang, 'XData', X);
+set(h_ang, 'YData', Y);
+set(h_ang, 'ZData', Z);
+
+
+rotate(h_lin,wl,thl)
+rotate(h_ang,wa,tha)
+
+end
+
+function updateTexts(textr, M, B, q)
+% Update all the texts!
 cond = J_condition(M,B,q);
 iso  = J_isotropy(M,B,q);
 
@@ -138,27 +162,4 @@ iso_txt  = sprintf("Isotropy:  %.3f ", iso);
 
 set(textr(1), 'String', cond_txt)
 set(textr(2), 'String', iso_txt)
-
-end
-
-function updateEllipsoid(h,B,q, type)
-% Updates a single ellipsoid. Specify linear or angulare with 'type'
-if type=="line"
-    [d,w,th] = ellipsoid_plot_linear(B,q,false);
-else
-    [d,w,th] = ellipsoid_plot_angular(B,q,false);
-end
-
-[X,Y,Z] = ellipsoid(0,0,0,d(1),d(2),d(3));
-set(h, 'XData', X);
-set(h, 'YData', Y);
-set(h, 'ZData', Z);
-
-% Sometimes robot no work.... why? idk man
-if th~=real(th)
-    msg = ['ERROR: Singularity hit?' num2str(singularity(B,q))];
-    disp(q)
-    error(msg)
-end
-rotate(h,w,th)
 end
