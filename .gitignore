@@ -1,6 +1,7 @@
 *.asv
 *.pdf
 *.html
+*.avi
+
 pdf/*
 html/*
-animation/*
