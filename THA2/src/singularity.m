@@ -24,8 +24,4 @@ jdet = det(A);
 jrank = rank(A);
 
 % use the determinant and rank to check if the A matrix is singular
-if (jdet == 0)
-    sing = true;
-else
-    sing =  false;
-end
+sing = jdet==0;

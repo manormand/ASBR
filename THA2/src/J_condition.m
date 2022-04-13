@@ -1,4 +1,4 @@
-function J_con = J_condition(S,B, q)
+function J_con = J_condition(M, B, q)
 %  J_condition calculates the square of J_isotropy 
 %
 % Use:
@@ -10,14 +10,17 @@ function J_con = J_condition(S,B, q)
 %   See also J_space
 
 arguments
-    S (6,:)        % Skew Axes in Space Frame 
+    M (4,4)        % Home position
     B (6,:)        % Skew Axes in Body Frame
     q (1,:)        % Initial joint positions
 end
 
 % Get the jacobian and its transpose
-js = J_space(S,q);
 jb = J_body(B,q);
+
+Tsb = FK_body(M,B,q);
+js = Ad(Tsb)*jb;
+
 ja = js(1:3,1:7);
 jl = jb(4:6,1:7);
 jtransa = ja.';

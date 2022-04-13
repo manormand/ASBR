@@ -30,7 +30,7 @@ elseif abs(tr_R+1) <= tolerance
         axis = (2*(1+rotm(1,1)))^-0.5 * (rotm(:,1) + [1;0;0]);
     elseif rotm(2,2) ~= -1
         axis = (2*(1+rotm(2,2)))^-0.5 * (rotm(:,2) + [0;1;0]);
-    else
+    elseif rotm(3,3) ~= -1
         axis = (2*(1+rotm(3,3)))^-0.5 * (rotm(:,3) + [0;0;1]);
     end
 else
