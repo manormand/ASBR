@@ -19,14 +19,23 @@ B = [   0           0 0        0 0   0 0;
         0           0 0        0 0   0 0;
         0           0 0        0 0   0 0];
 
-% q = deg2rad([30 50 30 50 -30 60 0]');
-q = rand([7,1])
+q = deg2rad([10 10 1 50 55 20 20]');
+%q = 0.5 + (rand([7,1])-0.5)
+q_guess = q - (rand([7,1])-0.5);
 
 addpath('src')
 
-%% Inverse Kinematics
 Tsd = FK_body(M,B,q);
 
+%% Inverse Kinematics
 inv_kin_animation(M,B,ones(7,1),Tsd)
 
 %% Transpose Kinematics
+trans_kin_animation(M,B,q_guess,Tsd)
+
+%% Redundancy Resolution Kinematics
+redres_kin_animation(M,B,q_guess,Tsd)
+
+%%
+close all
+trans_pid_kin_animation(M,B,q_guess,Tsd)

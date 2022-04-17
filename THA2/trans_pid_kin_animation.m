@@ -1,17 +1,17 @@
-function inv_kin_animation(M, B, q, Tsd, tol_w, tol_v, max_iter, frame_rate)
-% inv_kin_animation animate a robot from position a to b
+function trans_pid_kin_animation(M, B, q, Tsd, tol_w, tol_v, max_iter, frame_rate)
+% trans_pid_kin_animation animate a robot from position a to b
 %   This function uses the Newton Raphson Method to locate
 %   the joint positions required for the desired position, Tsd
 %
 % Use:
-% inv_kin_animation(M, B, q0, Tsd)
+% trans_pid_kin_animation(M, B, q0, Tsd)
 %   - M is the home position of the robot, represented by a 4x4 T-Mat
 %   - B is the body frame screw axes in a 6xn matrix
 %   - q is the initial guess configuration in a column vector
 %   - Tsd is the desired final configuration
 %
 % Optional:
-% J_inverse_kinematics(..., tol_w, tol_v, max_iter)
+% J_transerse_kinematics(..., tol_w, tol_v, max_iter)
 %   - tol_w is the orientation tolerance (default 0.001)
 %   - tol_v is the linear tolerance (default 0.0001)
 %   - max_iter is the maximum iterations allowed (default 100)
@@ -24,10 +24,16 @@ arguments
     q (:,1)        % Initial joint positions
     Tsd (4,4)      % Desired final pose
     tol_w double = 0.001   % orientation tolerance in rad
-    tol_v double = 0.0001  % distance tolerance in m
+    tol_v double = 0.001  % distance tolerance in m
     max_iter int32 = 250     % Maximum iterations allowed
     frame_rate = 3
 end
+% control params
+global k_p k_i k_d integ
+k_p = 0.39;
+k_i = 0.05;
+k_d = 0.2;
+integ = zeros(6,1);
 
 % load robot
 lbr = importrobot('iiwa7.urdf'); 
@@ -40,6 +46,7 @@ outside_tolerance = @(Vb) norm(Vb(1:3)) > tol_w || norm(Vb(4:6)) > tol_v;
 Tbd = FK_body(M,B,q)\Tsd;
 [S, th] = tMat2ScrewAxis(Tbd);
 Vb = S*th;
+Vb0 = Vb;
 
 % Setup Figure
 figure()
@@ -47,9 +54,9 @@ set(gcf, 'position', [100 100 800 515])
 
 % robot subplot
 axr = subplot(5,2, 1:2:10 ); % this line makes a 5x2 grid and populates one side
-plot3(Tsd(1,4),Tsd(2,4),Tsd(3,4), 'ro'), hold on;
+plot3(Tsd(1,4),Tsd(2,4),Tsd(3,4), 'ro', 'MarkerFaceColor','r'), hold on;
 show(lbr,q);
-    title('Inverse Kinematics', FontSize=14)
+    title('PID Controller', FontSize=14)
     xlabel('x'),ylabel('y'),zlabel('z')
     grid on, axis equal;
     axis([-0.6 0.6 -0.6 0.6 0, 1.2])
@@ -83,23 +90,27 @@ textr = text([0 0],[0.5 1],{iso_txt, cond_txt});
     set(gca, 'Box', 'on')
 
 % setup animation
-inv_ani = VideoWriter('animation/Inverse_Kin_ani.avi');
-inv_ani.FrameRate = frame_rate;
+trans_pid_ani = VideoWriter('animation/trans_pid_kin_ani.avi');
+trans_pid_ani.FrameRate = frame_rate;
 dt = 1/frame_rate;
-open(inv_ani)
+open(trans_pid_ani)
 
 drawnow
 pause(0.1)
 
-frame = getframe(gcf);
-writeVideo(inv_ani,frame);
+for i = 1:dt*1
+    drawnow limitrate 
+    frame = getframe(gcf);
+    writeVideo(trans_pid_ani,frame);
+end
 
 i = 0;
 while outside_tolerance(Vb) && i < max_iter
     % iterate to next position
-    q = q + J_body(B,q)\Vb;
+    q = q + J_body(B,q)'*PID(Vb,Vb0);
 
     % update twist
+    Vb0 = Vb;
     Tbd = FK_body(M,B,q)\Tsd;
     [S, th] = tMat2ScrewAxis(Tbd);
     Vb = S*th;
@@ -115,7 +126,7 @@ while outside_tolerance(Vb) && i < max_iter
     drawnow limitrate % dont draw, just wait til the end
 
     frame = getframe(gcf);
-    writeVideo(inv_ani,frame);
+    writeVideo(trans_pid_ani,frame);
 end
 drawnow % now show animation
 end
@@ -162,4 +173,15 @@ iso_txt  = sprintf("Isotropy:  %.3f ", iso);
 
 set(textr(1), 'String', cond_txt)
 set(textr(2), 'String', iso_txt)
+end
+
+function output = PID(VB, VB0)
+global k_p k_i k_d integ
+
+integ = integ + VB;
+PROP_GAIN = k_p*eye(6)*VB;
+INT_GAIN = k_i*integ;
+DER_GAIN = k_d*(VB0-VB);
+
+output = PROP_GAIN + INT_GAIN + DER_GAIN;
 end
