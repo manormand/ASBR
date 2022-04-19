@@ -42,6 +42,14 @@ V = [V1,V2,V3];
 [w, th] = rotm2axangle(V);
 D = rad2deg(th);
 
+% normalise to destroy compex numbers
+for i=1:3
+    w(i) = real(w(i));
+    d(i) = real(d(i));
+end
+D = real(D);
+th = real(th);
+
 %plot 
 if new_fig
 %     figure()

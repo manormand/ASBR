@@ -89,7 +89,7 @@ xl = xlim;
 yl = ylim;
 zl = zlim;
 lims = [min([xl,yl,zl]) max([xl,yl,zl])];
-    xlim(lims), ylim(lims), zlim(lims)
+    xlim(lims), ylim(lims), zlim([0 lims(2)])
     
 end
 

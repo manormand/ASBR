@@ -2,6 +2,8 @@
 % Animates the KUKA LBR IIWA
 clear;clc;close all
 
+addpath('src\')
+
 %% Init Robot Params
 dbs = 0.340;
 dse = 0.400;
@@ -19,23 +21,39 @@ B = [   0           0 0        0 0   0 0;
         0           0 0        0 0   0 0;
         0           0 0        0 0   0 0];
 
-q = deg2rad([10 10 1 50 55 20 20]');
-%q = 0.5 + (rand([7,1])-0.5)
-q_guess = q - (rand([7,1])-0.5);
-
-addpath('src')
+q = deg2rad([-30 45 -20 -50 -60 50 0]');
 
 Tsd = FK_body(M,B,q);
 
 %% Inverse Kinematics
-inv_kin_animation(M,B,ones(7,1),Tsd)
+close all
+inv_kin_animation(M,B,0.1*ones(size(q)),Tsd)
+% inv_kin_animation(M,B,zeros(size(q)),Tsd)
 
 %% Transpose Kinematics
-trans_kin_animation(M,B,q_guess,Tsd)
+close all
+trans_kin_animation(M,B,0.1*ones(size(q)),Tsd)
 
 %% Redundancy Resolution Kinematics
-redres_kin_animation(M,B,q_guess,Tsd)
+close all
+% redres_kin_animation(M,B,q_guess,Tsd)
+redres_kin_animation(M,B,zeros(size(q)),Tsd)
+
 
 %%
-close all
-trans_pid_kin_animation(M,B,q_guess,Tsd)
+S = [   0    0 0       0 0            0 0;
+        0    1 0      -1 0            1 0;
+        1    0 1       0 1            0 1;
+        0 -dbs 0 dbs+dse 0 -dbs-dse-dew 0;
+        0    0 0       0 0            0 0;
+        0    0 0       0 0            0 0];
+
+
+FK_space(M,S,q,1)
+
+%%
+lbr = importrobot('iiwa14.urdf'); % 14 kg payload version
+lbr.DataFormat = 'column';
+show(lbr,q);
+title('Target Pose', 'FontSize',20)
+axis([-0.5 1.0 -0.75 0.75 0, 1.5])

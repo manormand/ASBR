@@ -25,9 +25,11 @@ arguments
     Tsd (4,4)      % Desired final pose
     tol_w double = 0.001   % orientation tolerance in rad
     tol_v double = 0.0001  % distance tolerance in m
-    max_iter int32 = 250     % Maximum iterations allowed
-    frame_rate = 3
+    max_iter int32 = 200     % Maximum iterations allowed
+    frame_rate = 30
 end
+
+max_motor_speed = 2*ones(size(q));
 
 % load robot
 lbr = importrobot('iiwa7.urdf'); 
@@ -41,18 +43,19 @@ Tbd = FK_body(M,B,q)\Tsd;
 [S, th] = tMat2ScrewAxis(Tbd);
 Vb = S*th;
 
-% Setup Figure
+%% Setup Figure
 figure()
-set(gcf, 'position', [100 100 800 515])
+set(gcf, 'position', [0 0 1920 1080])
 
 % robot subplot
 axr = subplot(5,2, 1:2:10 ); % this line makes a 5x2 grid and populates one side
-plot3(Tsd(1,4),Tsd(2,4),Tsd(3,4), 'ro'), hold on;
+plot3(Tsd(1,4),Tsd(2,4),Tsd(3,4), 'ro', 'MarkerFaceColor','r', 'MarkerSize',6)
+hold on;
 show(lbr,q);
     title('Inverse Kinematics', FontSize=14)
     xlabel('x'),ylabel('y'),zlabel('z')
     grid on, axis equal;
-    axis([-0.6 0.6 -0.6 0.6 0, 1.2])
+    axis([-0.5 1.0 -0.75 0.75 0, 1.5])
 
 % Linear Ellipsoid subplot
 subplot(5,2,[2 4]);    % populate top right
@@ -74,30 +77,56 @@ subplot(5,2,10)    % populate bottom right
 cond = J_condition(M,B,q);
 iso  = J_isotropy(M,B,q);
 
-cond_txt = sprintf("Condition: %.3f ", cond);
-iso_txt  = sprintf("Isotropy:  %.3f ", iso);
+top_txt  = sprintf("            Linear | Angular\n--------------------------------------");
+cond_txt = sprintf("Condition: %.3f | %2.3f", cond(1), cond(2));
+iso_txt  = sprintf("Isotropy:  %.3f | %2.3f", iso(1), iso(2));
 
-textr = text([0 0],[0.5 1],{iso_txt, cond_txt});
-    xlim([-0.1 0.5]), ylim([0 1.5])
+textr = text([0 0 0],[1.1, 0.7, 0.4],{top_txt, cond_txt, iso_txt}, ...
+                'FontSize',20, 'FontName','FixedWidth', 'Interpreter','none');
+    xlim([-0.01 0.3]), ylim([0 1.5])
     xticks([]), yticks([])
     set(gca, 'Box', 'on')
 
-% setup animation
-inv_ani = VideoWriter('animation/Inverse_Kin_ani.avi');
+%% Setup animation
+avi_path = 'avi/inverse_kin_ani.avi';
+inv_ani = VideoWriter(avi_path);
 inv_ani.FrameRate = frame_rate;
 dt = 1/frame_rate;
 open(inv_ani)
 
-drawnow
-pause(0.1)
-
 frame = getframe(gcf);
 writeVideo(inv_ani,frame);
 
+% loading thing
+subplot(axr)
+r = 0.15; n = ceil(2/dt);
+hold_x = r*ones(1,n);
+hold_y = zeros(1,n);
+hold_z = zeros(1,n);
+hold_ani = plot3(hold_x, hold_y, hold_z, 'b', ...
+                'LineWidth',3);
+
+drawnow
+% pause(0.1)
+for i = 2:n
+    th = i/n * (2*pi);
+    hold_x(i:n) = r*cos(th);
+    hold_y(i:n) = r*sin(th);
+    set(hold_ani, 'XData', hold_x, ...
+                        'YData', hold_y)
+    drawnow
+    
+    frame = getframe(gcf);
+    writeVideo(inv_ani,frame);
+end
+
+%% Spin
 i = 0;
 while outside_tolerance(Vb) && i < max_iter
     % iterate to next position
-    q = q + J_body(B,q)\Vb;
+    dq = J_body(B,q)\Vb;
+    dq = dt*min(dq, max_motor_speed);
+    q = q + dq;
 
     % update twist
     Tbd = FK_body(M,B,q)\Tsd;
@@ -111,16 +140,18 @@ while outside_tolerance(Vb) && i < max_iter
     updateEllipsoids(h_lin, h_ang, B, q)
     updateTexts(textr, M, B, q)
 
-    pause(dt)
+    % pause(dt)
     drawnow limitrate % dont draw, just wait til the end
 
     frame = getframe(gcf);
     writeVideo(inv_ani,frame);
 end
 drawnow % now show animation
+close(inv_ani)
+
 end
 
-
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% HELPER FUNCS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function updateRobot(robot, q, axr)
@@ -157,9 +188,9 @@ function updateTexts(textr, M, B, q)
 cond = J_condition(M,B,q);
 iso  = J_isotropy(M,B,q);
 
-cond_txt = sprintf("Condition: %.3f ", cond);
-iso_txt  = sprintf("Isotropy:  %.3f ", iso);
+cond_txt = sprintf("Condition:   %.3f | %2.3f", cond(1), cond(2));
+iso_txt  = sprintf("Isotropy:    %.3f | %2.3f", iso(1), iso(2));
 
-set(textr(1), 'String', cond_txt)
-set(textr(2), 'String', iso_txt)
+set(textr(2), 'String', cond_txt)
+set(textr(3), 'String', iso_txt)
 end
