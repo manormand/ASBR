@@ -1,6 +1,12 @@
-a = [10 10 10 10 15]
+clear; clc
+link = input('link? \n -> -> ','s');
 
-b = 0:5:20
+idx = regexp(link, '/[0-9]') + 1;
+doc_num = link(idx:(idx+6));
 
 
-b = min(a,b)
+path = 'https://ieeexplore-ieee-org.ezproxy.lib.utexas.edu/document/';
+
+link = [path doc_num];
+fprintf('New Link:\n -> -> %s\n', link)
+clipboard('copy',link)
