@@ -27,8 +27,8 @@ Tsd = FK_body(M,B,q);
 
 %% Inverse Kinematics
 close all
-inv_kin_animation(M,B,0.1*ones(size(q)),Tsd)
-% inv_kin_animation(M,B,zeros(size(q)),Tsd)
+% inv_kin_animation(M,B,0.1*ones(size(q)),Tsd)
+inv_kin_animation(M,B,zeros(size(q)),Tsd)
 
 %% Transpose Kinematics
 close all
