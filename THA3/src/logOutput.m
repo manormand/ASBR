@@ -36,4 +36,4 @@ for k = 1:n_frames
     fprintf(file_id, '% .2f, % .2f, % .2f\n', C_exp(:,:,k)');
 end
 
-fclose(file_id)
+fclose(file_id);

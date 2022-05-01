@@ -216,6 +216,8 @@ function output = readOutput1(files_prefix)
     file_ID = fopen(filename, 'r');
     
     header = split(fgetl(file_ID), ', ');
+    p1 = str2num(fgetl(file_ID));
+    p2 = str2num(fgetl(file_ID));
     
     fspec = '%f, %f, %f';
     data = fscanf(file_ID, fspec, [3 inf])';
@@ -238,7 +240,8 @@ function output = readOutput1(files_prefix)
     end
     
     % to struct
+    output.em_cal  = p1;
+    output.opt_cal = p2;
     output.C = C;
-
     fprintf('DONE!\n')
 end
