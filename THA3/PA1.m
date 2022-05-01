@@ -15,7 +15,7 @@ addpath('src')
 
 %% Problem 3
 % Calculate C_i
-df = getDataset('a');
+df = getDataset('b');
 
 %%
 % Script for calculating transforms for every frame
@@ -107,3 +107,11 @@ end
 %% 
 % d.) Output as file
 logOutput(df);
+
+%% Problem 4
+%  Pivot Calibration using `pivotCalibration()`
+post_pos_EM = pivotCalibration(df)
+
+%% Problem 5
+%  Pivot Calibration using `pivotCalibration()`
+post_pos_OPT = pivotCalibration(df, 0)

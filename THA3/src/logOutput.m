@@ -22,6 +22,10 @@ for k = 1:n_frames
     end
 end
 
+% calc post positions using pivot calibration
+post_pos_EM = pivotCalibration(df);
+post_pos_OPT = pivotCalibration(df, 0);
+
 % open file + add headers
 filename = ['pa1-' df.id '-output-1.txt'];
 filepath = fullfile('data_out', filename);
@@ -29,7 +33,8 @@ filepath = fullfile('data_out', filename);
 file_id = fopen(filepath,'w');
 
 fprintf(file_id, '%d, %d, %s\n', n_c, n_frames, filename);
-
+fprintf(file_id, '% .2f, % .2f, % .2f\n', post_pos_EM');
+fprintf(file_id, '% .2f, % .2f, % .2f\n', post_pos_OPT');
 
 % add data to file
 for k = 1:n_frames
