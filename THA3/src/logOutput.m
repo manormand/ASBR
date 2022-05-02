@@ -1,4 +1,8 @@
 function logOutput(df)
+% logOuptput log the calculated outputs to an output file
+%   Use the pivot calibration to find the post location and then use least
+%   squares to find the calibration object position. Finally output into
+%   the data_out folder in specified format
 
 % get transforms
 Fd = frameTransforms(df);

@@ -1,4 +1,6 @@
 function [b_post, b_box] = pivotCalibration(df, for_EM)
+% pivotCalibration finds the location of specified post
+%   Specify EM or Opt dataset and implement basic pivot algorithm
 
 arguments
     df struct

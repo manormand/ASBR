@@ -1,30 +1,46 @@
-%% PA1
-clear; clc; close all
+%% THA3 - PA1
+%   Programming Assignment 3.1, the Emperor Strikes back
+% 
+% Authors: Pranav Kalyani, pk7683
+%
+%          Michael Normand, man2837 
+%
+% Date: May 01 2022
 
+clear; clc; close all
 addpath('src')
 
-%% Problem 1
-%
-% <include>src/registerPoints.m<\include>
-%
-
-%% Problem 2
-%
-% <include>src/pivotCalibration.m<\include>
-%
-
-%% Problem 3
-% Calculate C_i
-df = getDataset('b');
-
 %%
-% Script for calculating transforms for every frame
+%   Data is contained as a struct
+%   *getDataset* is in Appendix
+df = getDataset('a');
+
+%% Problem 1 - Point Set Registration
+%   We created a _registerPoints()_ function for general point calibration.
+%   This function
+%
+% <include>src/registerPoints.m</include>
+%
+
+%% Problem 2 - Pivot Calibration
+%   The following function performs Pivot Calibration for both EM sensor and
+%   Optical Sensor
+%
+% <include>src/pivotCalibration.m</include>
+%
+
+%% Problem 3 - C_{i, expected}
+%   We used the following script to calculate the frame transformations
+%   from a given dataset.
 % 
-% <include>src/frameTransforms.m<\include>
+% <include>src/frameTransforms.m</include>
 %
 
 %%
-% a.) `Compute Fd` with _frameTransforms()_
+% *a.) Compute Fd* 
+%   Using _frameTransforms()_ we can directly get the Fd or Fa transforms
+%
+
 Fd = frameTransforms(df);
 
 % Check for errors
@@ -54,7 +70,8 @@ for k = 1:size(A,3)
 end
 
 %%
-% b.) `Compute Fa` in similar manner
+% *b.) Compute Fa* 
+%   same as before
 Fa = frameTransforms(df, 0);
 
 % Check for errors
@@ -85,7 +102,8 @@ end
 
 
 %%
-% c.) Compute C_exp
+% *c.) Compute C_exp*
+%   The following is included in the _logOutput()_ function
 %
 %   c = df.calbody.c;
 %   n_c = height(c);
@@ -105,13 +123,34 @@ end
 %
 
 %% 
-% d.) Output as file
+% *d.) Output as file*
+%   _logOutput()_ handles all of the output requirements, includeing pivot
+%   calibration
+%
+% <include>src/logOutput.m</include>
+%
+% .........................................................................
+
 logOutput(df);
 
-%% Problem 4
-%  Pivot Calibration using `pivotCalibration()`
+%% Problem 4 - Pivot Calibration w/ EM
+%  Pivot Calibration using _pivotCalibration()_
 post_pos_EM = pivotCalibration(df)
 
-%% Problem 5
-%  Pivot Calibration using `pivotCalibration()`
+%% Problem 5 - Pivot Calibration w/ Optics
+%  Pivot Calibration using _pivotCalibration()_
 post_pos_OPT = pivotCalibration(df, 0)
+
+%% Appendix
+%   1. getDataset()
+%
+% <include>src/getDataset.m</include>
+%
+%   2. quaternion2rotm()
+%
+% <include>src/quaternion2rotm.m</include>
+%
+%   3. skewify
+%
+% <include>src/skewify.m</include>
+%

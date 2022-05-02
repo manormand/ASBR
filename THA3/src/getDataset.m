@@ -1,5 +1,7 @@
 function output = getDataset(log_id)
-% loadDataset
+% loadDataset returns a struct containing all data pertaining to log_id
+%   Use this function to load in a dataset and get all required data
+
 clc
 disp(['======= Loading dataset for ''' log_id ''' ======='])
 output.id = log_id;
@@ -7,9 +9,9 @@ output.id = log_id;
 % generate prefix based on id
 prefix = 'pa1-debug-';
 
-unkown = any(log_id=='hjk');
+unkown = any(log_id=='hijk');
 if unkown
-    prefix = 'pa1-unkown-';
+    prefix = 'pa1-unknown-';
 end
 
 % create path
