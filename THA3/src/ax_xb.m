@@ -92,12 +92,14 @@ end
       
       qa1 = Rotation.quaternion2rotm((q_Robot_config(j,:))'); % turining Ei quat to rotmat
       qa2 = Rotation.quaternion2rotm((q_Robot_config(j+1,:))'); % turining Ei+1 quat to rotmat
-      qa3 = Rotation.rotm2quaternion(inv(qa1)*qa2); % calculating E^-1*E and then turing it to a quaternion 
+      qa3 = Rotation.rotm2quaternion(inv(qa2)*(qa1)); % calculating A and then turing it to a quaternion 
+      
+      
       
       qb1 = Rotation.quaternion2rotm((q_camera_config(j,:))'); % turining S quat to rotmat
       qb2 = Rotation.quaternion2rotm((q_camera_config(j+1,:))'); % turining S quat to rotmat
-      qb3 = Rotation.rotm2quaternion(qb1*inv(qb2)); % calculating S^-1*S and then turing it to a quaternion 
-      
+      qb3 = Rotation.rotm2quaternion(qb2*inv(qb1)); % calculating B and then turing it to a quaternion 
+     
       
       Sa = qa3(1);
       Sb = qb3(1);
@@ -136,11 +138,13 @@ end
       
       qa1 = Rotation.quaternion2rotm((q_Robot_config(g,:))'); % turining Ei quat to rotmat
       qa2 = Rotation.quaternion2rotm((q_Robot_config(g+1,:))'); % turining Ei+1 quat to rotmat
-      qa3 = (inv(qa1)*qa2); % calculating E1^-1*E2 
+      qa3 = (inv(qa2)*(qa1)); % calculating A
+      
       
       qb1 = Rotation.quaternion2rotm((q_camera_config(g,:))'); % turining S quat to rotmat
       qb2 = Rotation.quaternion2rotm((q_camera_config(g+1,:))'); % turining S quat to rotmat
-      qb3 = (qb1*inv(qb2)); % calculating S1*S2^-1 
+      qb3 = (qb2*inv(qb1)); % calculating B 
+      
       
      tempmat = X(1+f:3+f,1:3); % Rx matrix
       pa = (t_Robot_config(g,:))' ; % given translation pA
