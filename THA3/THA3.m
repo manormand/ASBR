@@ -260,14 +260,16 @@ t_Robot_config2=[
    ansPa2_2prt3_noise = ax_xb_noisy(q_Robot_config2, q_camera_config2,t_Robot_config2,t_camera_config2 );
    
    error2 = abs(ansPa2_2prt3_free-ansPa2_2prt3_noise).^2;
-   MSE2 = ((error2(:))/numel(ansPa2_1))'
-   MSE_sum2 = sum((error2(:))/numel(ansPa2_1))
+   MSE2 = ((error2(:))/numel(ansPa2_2prt3_free))'
+   MSE_sum2 = sum((error2(:))/numel(ansPa2_2prt3_free))
    
-   % The results show a minor decrease in error per element and also as a
-   % sum probably because the noise effect is reduced due to the fact we
-   % are using a smaller data ... it doesn't affect it significantly
-   % because due to the smaller data set the ratio at which the noise
-   % bothers the system is still fairly significant 
+   % The results show a significant increase in error per element and also as a
+   % sum. The data is significantly affected by the noise because 
+   % the smaller data set is more prone to be bothered 
+   % by the noise since the system is fairly sensitive 
+   % if the data set is small 
+   %
+   
 
 %% Appendix
 %   1. getDataset()
@@ -282,6 +284,6 @@ t_Robot_config2=[
 %
 % <include>src/skewify.m</include>
 %
-%   3. Rotation
+%   4. Rotation
 %
 % <include>src/Rotation.m</include>
