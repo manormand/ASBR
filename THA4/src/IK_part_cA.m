@@ -1,4 +1,4 @@
-function [q_des, q, le] = IK_part_c(M,S,q,J_limits,d_tool,p)
+function [q_des, q, le] = IK_part_cA(M,S,q,J_limits,d_tool,p,n)
 % redundancy_resolution Control robot from config a to b
 %   Expansion from J_inverse_kinematics using manipulability as a secondary 
 %   objective function. This function calculates manipulability in its own 
@@ -33,8 +33,8 @@ function [q_des, q, le] = IK_part_c(M,S,q,J_limits,d_tool,p)
 
 tol_v = 0.003;
 max_iter = 400;
-zeta = 1.2;
-eta = 1.2;
+h = 1;
+d = 0.005;
 
 R = axangle2rotm([0 1 0], pi);
 Tsd = [ R p; [0 0 0 1]];
@@ -50,9 +50,9 @@ i = 1;
 
 while outside_tolerance(D) && i < max_iter
     t = getT([0,0,d_tool]',M,S,q(:,i));
-    orientationControl(M,S,q(:,i))
-    dq = zeta*positionControl(S,q(:,i),t,p) + eta*orientationControl(M,S,q(:,i));
-    q(:,i+1) = q(:,i) + dq;
+    
+    dq = calcDq(S,q(:,i),t,p) + wallEffect(M,S,q(:,i),t,n,d);
+    q(:,i+1) = q(:,i) + dq*h;
     q(:,i+1) = jointLimiter(q(:,i+1),J_limits);
 
     % update twist
@@ -64,7 +64,7 @@ end
 q_des = q(:,end);
 end
 
-function dq = positionControl(S,q,t,p)
+function dq = calcDq(S,q,t,p)
 J = J_space(S,q);
 J_a = J(1:3,:);
 J_e = J(4:6,:);
@@ -74,15 +74,19 @@ b = p - t;
 dq = A\b;
 end
 
-function dq = orientationControl(M,S,q)
-T = FK_space(M,S,q);
-R = T(1:3,1:3);
+function dq = wallEffect(M,S,q,t,n,d)
+F = FK_space(M,S,q);
+x = F*[t; 1]; x = x(1:3);
+R = F(1:3,1:3);
 
-J = J_space(S,q);
-J_a = J(1:3,:);
+Js = J_space(S,q);
+Jb = Ad(F)*Js;
 
-A = -skewify(R*[0 0 1]')*J_a;
-b = [0 0 -1]';
+Ja = Jb(1:3,:);
+Je = Jb(4:6,:);
+
+A = R*(-skewify(t)*Ja + Je);
+b = n'\(d - dot(n,x));
 
 dq = A\b;
 end

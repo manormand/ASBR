@@ -48,6 +48,7 @@ S = [   0    0 0       0 0            0 0
 q0 = ones(7,1);
 p_goal = [0.5 0.5 0.5]';
 
+%% Initial conditions
 % plot initial robot position
 figure(1)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
@@ -132,4 +133,60 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Final Robot Position w Joint Restraints + orientation control')
 
-%% PA.c
+%% PA.c - a
+n = [2 -1 2]';
+[q_des_a,~, le] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
+final_q = rad2deg(q_des_a)
+
+figure(2)
+plot(le)
+    ylim([0 1.2*max(le)])
+
+figure(5)
+lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
+lbr.DataFormat = 'column';
+show(lbr,q_des_b, 'Frames', 'off');
+hold on;
+T1 = FK_space(M,S,q_des_b);
+p_tool = [0 0 d_tool 1]';
+p_end = T1*p_tool;
+
+X = [T1(1,4) p_end(1)];
+Y = [T1(2,4) p_end(2)];
+Z = [T1(3,4) p_end(3)];
+
+plot3(X,Y,Z,'g', 'LineWidth',5)
+plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
+patch([n(1) 0 0], [0 n(2) 0], [0 0 n(3)], [1 1 1])
+hold off
+xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
+title('Joint Restraints w/ virtual wall');
+
+%% PA.c - b
+n = [2 -1 2]';
+[q_des_a,~, le] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
+final_q = rad2deg(q_des_a)
+
+figure(2)
+plot(le)
+    ylim([0 1.2*max(le)])
+
+figure(6)
+lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
+lbr.DataFormat = 'column';
+show(lbr,q_des_b, 'Frames', 'off');
+hold on;
+T1 = FK_space(M,S,q_des_b);
+p_tool = [0 0 d_tool 1]';
+p_end = T1*p_tool;
+
+X = [T1(1,4) p_end(1)];
+Y = [T1(2,4) p_end(2)];
+Z = [T1(3,4) p_end(3)];
+
+plot3(X,Y,Z,'g', 'LineWidth',5)
+plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
+patch([n(1) 0 0], [0 n(2) 0], [0 0 n(3)], [1 1 1])
+hold off
+xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
+title('Joint Restraints w/ virtual wall');
