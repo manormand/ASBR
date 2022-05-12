@@ -44,11 +44,12 @@ S = [   0    0 0       0 0            0 0
         0    0 0       0 0            0 0
         0    0 0       0 0            0 0];
 
-% arbitrary joint positions
+%%
+% arbitrary joint positions and goals
 q0 = ones(7,1);
 p_goal = [0.5 0.5 0.5]';
 
-%% Initial conditions
+%% Display Initial Conditions
 % plot initial robot position
 figure(1)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
@@ -70,7 +71,11 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Original Robot Position')
 
-%% PA.a - Space Form Forward Kinematics
+%% PA.a
+% Here we perform inverse kinematics with joint limitation implemented.
+% Depicted in the figure is the final robot position after it is deemed
+% close enough.
+%
 [q_des_a,~, le_a] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
 
 final_q = rad2deg(q_des_a)
@@ -79,6 +84,10 @@ final_q = rad2deg(q_des_a)
 figure(2)
 plot(le_a)
     ylim([0 1.2*max(le_a)])
+    title('Linear Error')
+    ylabel('error [m]')
+    xlabel('iteration')
+    
 
 % plot final robot position
 figure(3)
@@ -100,17 +109,25 @@ hold off
 
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Final Robot Position w/ Joint Limits')
-
+%%
+% These results are actually quite nice. Only 7 iterations? I'll take it. It
+% should be noted that the tool was not oriented properly. Heck the robot
+% is a little funky. But hey, it works!
 
 %% PA.b
-[q_des_b,~, le_a] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
+% Now we add a littl bit of *Pazzaz*. We can restrict the orientation to be
+% pointed directly down with a weighted goal.
+[q_des_b,~, le_b] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
 
-final_q = rad2deg(q_des_a)
+final_q = rad2deg(q_des_b)
 
 % plot linear error
 figure(2); hold on;
-plot(le_a)
-    ylim([0 1.2*max(le_a)])
+plot(le_b)
+    ylim([0 1.2*max(le_b)])
+    title('Linear Error')
+    ylabel('error [m]')
+    xlabel('iteration')
 
 % plot final robot position
 figure(4)
@@ -131,23 +148,30 @@ plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
 hold off
 
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
-title('Joint Restraints + orientation control')
+    title('Joint Restraints + orientation control')
+
+%%
+% The iteration count nearly tripled to 20 iterations, yet the orientation
+% was preserved despite starting at the oposite orientation (tool was
+% upward). Much more confident with this one.
 
 %% PA.c - a
+% Now we add a pesky wall. I deefined it in 3 points, shown in the robot
+% figure.
 n = [2 -1 2]';
-[q_des_a,~, le_a] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
-final_q = rad2deg(q_des_a)
+[q_des_cA,~, le_cA] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
+final_q = rad2deg(q_des_cA)
 
 figure(2)
-plot(le_a)
-    ylim([0 1.2*max(le_a)])
+plot(le_cA)
+    ylim([0 1.2*max(le_cA)])
 
 figure(5)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
-show(lbr,q_des_b, 'Frames', 'off');
+show(lbr,q_des_cA, 'Frames', 'off');
 hold on;
-T1 = FK_space(M,S,q_des_b);
+T1 = FK_space(M,S,q_des_cA);
 p_tool = [0 0 d_tool 1]';
 p_end = T1*p_tool;
 
@@ -162,21 +186,30 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Joint Restraints w/ virtual wall');
 
+%%
+% Man that wall came out of no where. Because I did not add any more
+% compensation, I expected the wall to mess with the simulation. The robot
+% does not even converge, which kinda sucks. You can see that the final q
+% hits the joint limits of the robot, most likely why we see this
+% divergence.
+
 %% PA.c - b
+% Now we add every restraint in the book. We are talking joint limits,
+% orientation locking, and a virtual wall...
 n = [2 -1 2]';
-[q_des_a,~, le_a] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
-final_q = rad2deg(q_des_a)
+[q_des_cB,~, le_cB] = IK_part_cB(M,S,q0,J_limits,d_tool,p_goal,n);
+final_q = rad2deg(q_des_cB)
 
 figure(2)
-plot(le_a)
-    ylim([0 1.2*max(le_a)])
+plot(le_cB)
+    ylim([0 1.2*max(le_cB)])
 
 figure(6)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
-show(lbr,q_des_b, 'Frames', 'off');
+show(lbr,q_des_cB, 'Frames', 'off');
 hold on;
-T1 = FK_space(M,S,q_des_b);
+T1 = FK_space(M,S,q_des_cB);
 p_tool = [0 0 d_tool 1]';
 p_end = T1*p_tool;
 
@@ -191,7 +224,14 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Joint Restraints + orientation control w/ virtual wall');
 
+%%
+% I'll be honest I was surprised with this one. Despite j6 hitting its
+% joint limit, the more constrained system was able to perform better.
+% Perhaps the combination of the constraints increased the robusteness of
+% the system. Regardless, converging in 49 iterations is pretty efficient.
+
 %% Part d - Configs
+% We tested 3 separate configs, in a row. Sounds like fun.
 
 % init configurations
 n1 = n;
@@ -267,4 +307,4 @@ plot(le_cB)
     title('Linear Error Comparison')
     ylabel('error [m]')
     xlabel('iteration')
-    legend('Part a','Part b','Part c-a','partc-b')
+    legend('Part a','Part b','Part c-a','Part c-b')
