@@ -45,25 +45,91 @@ S = [   0    0 0       0 0            0 0
         0    0 0       0 0            0 0];
 
 % arbitrary joint positions
-q0 = 0.1*ones(7,1);
-
-%% PA.a - Space Form Forward Kinematics
-clc; close all
+q0 = ones(7,1);
 p_goal = [0.5 0.5 0.5]';
 
-[q_des,q, le] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
+% plot initial robot position
+figure(1)
+lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
+lbr.DataFormat = 'column';
+show(lbr,q0, 'Frames', 'off');
+hold on;
+T0 = FK_space(M,S,q0);
+p_tool = [0 0 d_tool 1]';
+p_end = T0*p_tool;
 
-rad2deg(q_des)
+X = [T0(1,4) p_end(1)];
+Y = [T0(2,4) p_end(2)];
+Z = [T0(3,4) p_end(3)];
 
-figure()
+plot3(X,Y,Z,'g', 'LineWidth',5)
+plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
+hold off
+
+xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
+title('Original Robot Position')
+
+%% PA.a - Space Form Forward Kinematics
+[q_des_a,~, le] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
+
+final_q = rad2deg(q_des_a)
+
+% plot linear error
+figure(2)
 plot(le)
     ylim([0 1.2*max(le)])
 
-figure()
-lbr = importrobot('iiwa14.urdf'); % 14 kg payload version
+% plot final robot position
+figure(3)
+lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
-gripper = 'iiwa_link_ee_kuka';
-show(lbr,q_des);
-xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
-title('KUKA LBR iiwa 14')
+show(lbr,q_des_a, 'Frames', 'off');
+hold on;
+T1 = FK_space(M,S,q_des_a);
+p_tool = [0 0 d_tool 1]';
+p_end = T1*p_tool;
 
+X = [T1(1,4) p_end(1)];
+Y = [T1(2,4) p_end(2)];
+Z = [T1(3,4) p_end(3)];
+
+plot3(X,Y,Z,'g', 'LineWidth',5)
+plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
+hold off
+
+xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
+title('Final Robot Position w/ Joint Limits')
+
+
+%% PA.b
+[q_des_b,~, le] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
+
+final_q = rad2deg(q_des_a)
+
+% plot linear error
+figure(2); hold on;
+plot(le)
+    ylim([0 1.2*max(le)])
+
+% plot final robot position
+figure(4)
+lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
+lbr.DataFormat = 'column';
+show(lbr,q_des_b, 'Frames', 'off');
+hold on;
+T1 = FK_space(M,S,q_des_b);
+p_tool = [0 0 d_tool 1]';
+p_end = T1*p_tool;
+
+X = [T1(1,4) p_end(1)];
+Y = [T1(2,4) p_end(2)];
+Z = [T1(3,4) p_end(3)];
+
+plot3(X,Y,Z,'g', 'LineWidth',5)
+plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
+hold off
+
+xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
+title('Final Robot Position w Joint Restraints + orientation control')
+
+%% PA.c
