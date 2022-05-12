@@ -1,78 +1,77 @@
-function [q, linear_error, condition, isotropy] = IK_part_a(M,S,q0,J_limits, d_tool, p_goal)
+function [q_des, q, le] = IK_part_a(M,S,q,J_limits,d_tool,p)
+% redundancy_resolution Control robot from config a to b
+%   Expansion from J_inverse_kinematics using manipulability as a secondary 
+%   objective function. This function calculates manipulability in its own 
+%   helper functions and then calculates the gradient using the numerical 
+%   derivative formula.
+%
+% Use:
+% q_des = redundancy_resolustion(M, B, q0, Tsd)
+%   - M is the home position of the robot, represented by a 4x4 T-Mat
+%   - B is the body frame screw axes in a 6xn matrix
+%   - q is the initial guess configuration in a column vector
+%   - Tsd is the desired final configuration
+%
+% Optional:
+% [q_des, itered_out] = redundancy_resolution(..., tol_w, tol_v, max_iter)
+%   - tol_w is the orientation tolerance (default 0.001)
+%   - tol_v is the linear tolerance (default 0.0001)
+%   - max_iter is the maximum iterations allowed (default 100)
+%   - itered_out shows if the maximum iterations limit was reached
+%
+%   See also J_inverse_kinematics, J_transpose_kinematics
 
-h = 0.1;
-tol = 0.003;
-distance = @(T) T(1:3,4);
-linearError = @(q,i) norm( distance(FK_space(M,S,q(:,i))) - p_goal ); 
+% arguments
+%     M (4,4)        % Home postition of end effector
+%     B (6,:)        % Skew Axes in Body Frame
+%     q (:,1)        % Initial joint positions
+%     Tsd (4,4)      % Desired final pose
+%     tol_w double = 0.001   % orientation tolerance in rad
+%     tol_v double = 0.0001  % distance tolerance in m
+%     max_iter int32 = 250     % Maximum iterations allowed
+% end
 
-q = [q0];
+tol_v = 0.003;
+max_iter = 400;
+h = 1;
+
+R = axangle2rotm([0 1 0], pi);
+Tsd = [ R p; [0 0 0 1]];
+
+% define tolerance function
+outside_tolerance = @(Tsd) norm(Tsd(1:3,4)) > tol_v;
+
+% init loop vals
+Tds = Tsd\FK_space(M,S,q);
 i = 1;
-linear_error = linearError(q,1);
-while linear_error(i) > tol && i < 1000
-    if linear_error(i) > 1
-        dq = farDq(M,S,q(:,i),d_tool,p_goal);
-    else
-        dq = closeDq(M,S,q(:,i),d_tool,p_goal);
-    end
 
-    q(:, i+1) = q(:,i) + (dq + jointLimitComp(q(:,i),J_limits))*h;
-    
-    q(:,i+1) = jointLimits(q(:,i+1), J_limits);
+% get current matrix transforms
+le = norm(Tds(1:3,4));
 
-    linear_error(i+1) = linearError(q,i+1);
-    i = i + 1;
+while outside_tolerance(Tds) && i < max_iter
+    t = getT([0,0,d_tool]',M,S,q(:,i));
+
+    q(:,i+1) = q(:,i) + calcDq(S,q(:,i),t,p)*h;
+    % update twist
+    Tds = Tsd\FK_space(M,S,q(:,i+1));
+    le(i+1) = norm(Tds(1:3,4));
+    i = i+1;
 end
 
+q_des = wrapToPi(q(:,end));
 end
 
+function dq = calcDq(S,q,t,p)
+J = J_space(S,q);
+J_a = J(1:3,:);
+J_e = J(4:6,:);
 
-function q = jointLimits(q,J_limits)
-q = max(q, J_limits(:,1));
-q = min(q, J_limits(:,2));
-end
-
-function dq = farDq(M,S,q,d_tool,p)
-% calc newton rapson
-
-Tsd = eye(4); Tsd(1:3,4) = p + d_tool*[0 0 1]';
-Tbd = FK_space(M,S,q)\Tsd;
-[S, th] = tMat2ScrewAxis(Tbd);
-Vb = S*th;
-Vb = [ Vb(1:3) ; 0 ; 0 ; 0 ];
-
-dq = J_space(S,q)\Vb;
-
-end
-
-function dq = closeDq(M,S,q, d_tool, p)
-Tsd = FK_space(M,S,q);
-T_tool = eye(4); T_tool(3,4) = d_tool;
-Tsd = Tsd*T_tool;
-x_tool = Tsd(1:3,4);
-
-delta = [x_tool-p; 0; 0; 0];
-
-n = height(q);
-A = zeros(n,6);
-for i = 1:n
-    alpha = i*2*pi/n;
-    beta  = i*2*pi/n;
-    A(i,:) = [cos(alpha)*cos(beta) cos(alpha)*sin(beta) sin(alpha) 0 0 0];
-end
-
-b = ones(n,1) - A*delta;
-
-dx = A\b;
-
-dq = J_space(S,q)\dx;
-end
-
-function dq = jointLimitComp(q, J_limits)
-
-lower = J_limits(:,1);
-upper = J_limits(:,2);
-
-A = [eye(height(q)); -eye(height(q))];
-b = [upper-q; q-lower];
+A = -skewify(t)*J_a + J_e;
+b = p - t;
 dq = A\b;
+end
+
+function dq = jointLimiter(q,dq,J_limits)
+
+dq = 12;
 end

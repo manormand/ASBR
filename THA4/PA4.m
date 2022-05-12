@@ -45,15 +45,15 @@ S = [   0    0 0       0 0            0 0
         0    0 0       0 0            0 0];
 
 % arbitrary joint positions
-q = deg2rad([20 -10 30 0 -30 45 0]');
+q0 = 0.1*ones(7,1)
 
 %% PA.a - Space Form Forward Kinematics
 clc; close all
-p = [1 1 1]';
+p_goal = [0.5 0.5 0.5]';
 
-[q,le] = IK_part_a(M,S,q,J_limits,d_tool,p);
+[q_des,q, le] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
 
-rad2deg(q(:,end))
+rad2deg(q_des)
 
 figure()
 plot(le)
@@ -63,7 +63,7 @@ figure()
 lbr = importrobot('iiwa14.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
 gripper = 'iiwa_link_ee_kuka';
-show(lbr,q(:,end));
+show(lbr,q_des);
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('KUKA LBR iiwa 14')
 
