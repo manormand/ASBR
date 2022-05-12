@@ -39,26 +39,25 @@ R = axangle2rotm([0 1 0], pi);
 Tsd = [ R p; [0 0 0 1]];
 
 % define tolerance function
-outside_tolerance = @(Tsd) norm(Tsd(1:3,4)) > tol_v;
+outside_tolerance = @(D) norm(D) > tol_v;
 
 % init loop vals
-Tds = Tsd\FK_space(M,S,q);
+t = getT([0,0,d_tool]',M,S,q);
+D = Tsd\[t;1]; D = D(1:3);
+le = norm(D);
 i = 1;
 
-% get current matrix transforms
-le = norm(Tds(1:3,4));
-
-while outside_tolerance(Tds) && i < max_iter
+while outside_tolerance(D) && i < max_iter
     t = getT([0,0,d_tool]',M,S,q(:,i));
 
-    q(:,i+1) = q(:,i) + calcDq(S,q(:,i),t,p)*h;
+    q(:,i+1) = q(:,i) + (calcDq(S,q(:,i),t,p) + jointLimiter(q(:,i),J_limits))*h;
     % update twist
-    Tds = Tsd\FK_space(M,S,q(:,i+1));
-    le(i+1) = norm(Tds(1:3,4));
+    D = Tsd\[t;1]; D = D(1:3);
+    le(i+1) = norm(D);
     i = i+1;
 end
 
-q_des = wrapToPi(q(:,end));
+q_des = q(:,end);
 end
 
 function dq = calcDq(S,q,t,p)
@@ -71,7 +70,9 @@ b = p - t;
 dq = A\b;
 end
 
-function dq = jointLimiter(q,dq,J_limits)
-
-dq = 12;
+function q = jointLimiter(q,J_limits)
+upper = J_limits(:,2);
+lower = J_limits(:,1);
+q = min(q,upper);
+q = max(q,lower);
 end

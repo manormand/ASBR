@@ -45,7 +45,7 @@ S = [   0    0 0       0 0            0 0
         0    0 0       0 0            0 0];
 
 % arbitrary joint positions
-q0 = 0.1*ones(7,1)
+q0 = 0.1*ones(7,1);
 
 %% PA.a - Space Form Forward Kinematics
 clc; close all
