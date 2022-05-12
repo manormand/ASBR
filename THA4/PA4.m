@@ -71,14 +71,14 @@ xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Original Robot Position')
 
 %% PA.a - Space Form Forward Kinematics
-[q_des_a,~, le] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
+[q_des_a,~, le_a] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
 
 final_q = rad2deg(q_des_a)
 
 % plot linear error
 figure(2)
-plot(le)
-    ylim([0 1.2*max(le)])
+plot(le_a)
+    ylim([0 1.2*max(le_a)])
 
 % plot final robot position
 figure(3)
@@ -103,14 +103,14 @@ title('Final Robot Position w/ Joint Limits')
 
 
 %% PA.b
-[q_des_b,~, le] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
+[q_des_b,~, le_a] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
 
 final_q = rad2deg(q_des_a)
 
 % plot linear error
 figure(2); hold on;
-plot(le)
-    ylim([0 1.2*max(le)])
+plot(le_a)
+    ylim([0 1.2*max(le_a)])
 
 % plot final robot position
 figure(4)
@@ -131,16 +131,16 @@ plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
 hold off
 
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
-title('Final Robot Position w Joint Restraints + orientation control')
+title('Joint Restraints + orientation control')
 
 %% PA.c - a
 n = [2 -1 2]';
-[q_des_a,~, le] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
+[q_des_a,~, le_a] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
 final_q = rad2deg(q_des_a)
 
 figure(2)
-plot(le)
-    ylim([0 1.2*max(le)])
+plot(le_a)
+    ylim([0 1.2*max(le_a)])
 
 figure(5)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
@@ -164,12 +164,12 @@ title('Joint Restraints w/ virtual wall');
 
 %% PA.c - b
 n = [2 -1 2]';
-[q_des_a,~, le] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
+[q_des_a,~, le_a] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
 final_q = rad2deg(q_des_a)
 
 figure(2)
-plot(le)
-    ylim([0 1.2*max(le)])
+plot(le_a)
+    ylim([0 1.2*max(le_a)])
 
 figure(6)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
@@ -189,4 +189,82 @@ plot3(p_goal(1),p_goal(2),p_goal(3), 'ro','MarkerFaceColor','r')
 patch([n(1) 0 0], [0 n(2) 0], [0 0 n(3)], [1 1 1])
 hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
-title('Joint Restraints w/ virtual wall');
+title('Joint Restraints + orientation control w/ virtual wall');
+
+%% Part d - Configs
+
+% init configurations
+n1 = n;
+n2 = -n;
+n3 = [1 0.5 0.5]';
+
+p1 = p_goal;
+p2 = [-0.5 0.5 0.5]';
+p3 = [0 0.6 0.2]';
+
+%%
+% Testing for part a
+[q_des, ~, le1] = IK_part_a(M,S,q0,J_limits,d_tool,p1);
+[q_des, ~, le2] = IK_part_a(M,S,q_des,J_limits,d_tool,p2);
+[~, ~, le3] = IK_part_a(M,S,q_des,J_limits,d_tool,p3);
+
+figure()
+le_a = [le1 le2 le3];
+plot(le_a), hold on;
+xline([length(le1) length(le1)+length(le2)], ':');
+    hold off;
+    title('Linear Error: Joint Restraints')
+    ylim([0 1.2*max(le_a)])
+
+%%
+% Testing for part b
+[q_des, ~, le1] = IK_part_b(M,S,q0,J_limits,d_tool,p1);
+[q_des, ~, le2] = IK_part_b(M,S,q_des,J_limits,d_tool,p2);
+[~, ~, le3] = IK_part_b(M,S,q_des,J_limits,d_tool,p3);
+
+figure()
+le_b = [le1 le2 le3];
+plot(le_b), hold on;
+xline([length(le1) length(le1)+length(le2)], ':');
+    hold off;
+    title('Linear Error: Joint Restraints + orientation lock')
+    ylim([0 1.2*max(le_b)])
+
+%%
+% Testing for part c-a
+[q_des, ~, le1] = IK_part_cA(M,S,q0,J_limits,d_tool,p1,n1);
+[q_des, ~, le2] = IK_part_cA(M,S,q_des,J_limits,d_tool,p2,n2);
+[~, ~, le3] = IK_part_cA(M,S,q_des,J_limits,d_tool,p3,n3);
+
+figure()
+le_cA = [le1 le2 le3];
+plot(le_cA), hold on;
+xline([length(le1) length(le1)+length(le2)], ':');
+    hold off;
+    title('Linear Error: Joint Restraints + Virtual Wall')
+    ylim([0 1.2*max(le_cA)])
+
+%%
+% Testing for part c-b
+[q_des, ~, le1] = IK_part_cB(M,S,q0,J_limits,d_tool,p1,n1);
+[q_des, ~, le2] = IK_part_cB(M,S,q_des,J_limits,d_tool,p2,n2);
+[~, ~, le3] = IK_part_cB(M,S,q_des,J_limits,d_tool,p3,n3);
+
+figure()
+le_cB = [le1 le2 le3];
+plot(le_cB), hold on;
+xline([length(le1) length(le1)+length(le2)], ':');
+    hold off;
+    title('Linear Error: All Restraints')
+    ylim([0 1.2*max(le_cB)])
+
+%% final plot?
+figure()
+plot(le_a); hold on
+plot(le_b)
+plot(le_cA)
+plot(le_cB)
+    title('Linear Error Comparison')
+    ylabel('error [m]')
+    xlabel('iteration')
+    legend('Part a','Part b','Part c-a','partc-b')
