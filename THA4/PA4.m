@@ -1,5 +1,5 @@
-%% ASBR - PA2.m
-% Programming Assignment 2 - Electric Boogaloo
+%% ASBR - PA4.m
+% Programming Assignment 4 - Electric Boogaloo
 %
 % Authors: Pranav Kalyani, pk7683
 %          Michael Normand, man2837 
