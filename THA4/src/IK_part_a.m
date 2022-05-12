@@ -50,7 +50,9 @@ i = 1;
 while outside_tolerance(D) && i < max_iter
     t = getT([0,0,d_tool]',M,S,q(:,i));
 
-    q(:,i+1) = q(:,i) + (calcDq(S,q(:,i),t,p) + jointLimiter(q(:,i),J_limits))*h;
+    q(:,i+1) = q(:,i) + calcDq(S,q(:,i),t,p)*h;
+    q(:,i+1) = jointLimiter(q(:,i+1),J_limits);
+
     % update twist
     D = Tsd\[t;1]; D = D(1:3);
     le(i+1) = norm(D);
