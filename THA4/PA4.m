@@ -71,12 +71,14 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Original Robot Position')
 
+%%
+
 %% PA.a
 % Here we perform inverse kinematics with joint limitation implemented.
 % Depicted in the figure is the final robot position after it is deemed
 % close enough.
 %
-[q_des_a,~, le_a] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
+[q_des_a,~, le_a,cond_ang,cond_lin,iso_ang,iso_lin] = IK_part_a(M,S,q0,J_limits,d_tool,p_goal);
 
 final_q = rad2deg(q_des_a)
 
@@ -109,20 +111,38 @@ hold off
 
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Final Robot Position w/ Joint Limits')
+
+figure(4)
+plot(cond_ang)
+hold on 
+plot(cond_lin)
+title('Condition number a')
+hold off
+legend('Cond angular a','Cond linear a')
+
+figure(5)
+plot(iso_ang)
+hold on 
+plot(iso_lin)
+title('Isotropy number a')
+hold off 
+legend('Iso angular a','Iso linear a ')
+
+
 %%
-% These results are actually quite nice. Only 7 iterations? I'll take it. It
+% Discusion - These results are actually quite nice. Only 7 iterations? I'll take it. It
 % should be noted that the tool was not oriented properly. Heck the robot
 % is a little funky. But hey, it works!
 
 %% PA.b
 % Now we add a littl bit of *Pazzaz*. We can restrict the orientation to be
 % pointed directly down with a weighted goal.
-[q_des_b,~, le_b] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
+[q_des_b,~, le_b, cond_ang_b,cond_lin_b,iso_ang_b,iso_lin_b] = IK_part_b(M,S,q0,J_limits,d_tool,p_goal);
 
 final_q = rad2deg(q_des_b)
 
 % plot linear error
-figure(2); hold on;
+figure(6); hold on;
 plot(le_b)
     ylim([0 1.2*max(le_b)])
     title('Linear Error')
@@ -130,7 +150,7 @@ plot(le_b)
     xlabel('iteration')
 
 % plot final robot position
-figure(4)
+figure(7)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
 show(lbr,q_des_b, 'Frames', 'off');
@@ -149,9 +169,26 @@ hold off
 
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
     title('Joint Restraints + orientation control')
+    
+ figure(8)
+plot(cond_ang_b)
+hold on 
+plot(cond_lin_b)
+title('Condition number b')
+hold off
+legend('Cond angular b','Cond linear b')
+
+figure(9)
+plot(iso_ang_b)
+hold on 
+plot(iso_lin_b)
+title('Isotropy number b')
+hold off 
+legend('Iso angular b','Iso linear b')
+    
 
 %%
-% The iteration count nearly tripled to 20 iterations, yet the orientation
+% Discusion - The iteration count nearly tripled to 20 iterations, yet the orientation
 % was preserved despite starting at the oposite orientation (tool was
 % upward). Much more confident with this one.
 
@@ -159,14 +196,17 @@ xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 % Now we add a pesky wall. I deefined it in 3 points, shown in the robot
 % figure.
 n = [2 -1 2]';
-[q_des_cA,~, le_cA] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
+[q_des_cA,~, le_cA,cond_ang_Ca,cond_lin_Ca,iso_ang_Ca,iso_lin_Ca] = IK_part_cA(M,S,q0,J_limits,d_tool,p_goal,n);
 final_q = rad2deg(q_des_cA)
 
-figure(2)
+figure(10)
 plot(le_cA)
     ylim([0 1.2*max(le_cA)])
+    title('Linear Error')
+    ylabel('error [m]')
+    xlabel('iteration')
 
-figure(5)
+figure(11)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
 show(lbr,q_des_cA, 'Frames', 'off');
@@ -186,8 +226,26 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Joint Restraints w/ virtual wall');
 
+figure(12)
+plot(cond_ang_Ca)
+hold on 
+plot(cond_lin_Ca)
+title('Condition number Ca')
+hold off
+legend('Cond angular Ca','Cond linear Ca')
+
+figure(13)
+plot(iso_ang_Ca)
+hold on 
+plot(iso_lin_Ca)
+title('Isotropy number Ca')
+hold off 
+legend('Iso angular Ca','Iso linear Ca')
+
+
+
 %%
-% Man that wall came out of no where. Because I did not add any more
+% Discusion - Man that wall came out of no where. Because I did not add any more
 % compensation, I expected the wall to mess with the simulation. The robot
 % does not even converge, which kinda sucks. You can see that the final q
 % hits the joint limits of the robot, most likely why we see this
@@ -197,14 +255,17 @@ title('Joint Restraints w/ virtual wall');
 % Now we add every restraint in the book. We are talking joint limits,
 % orientation locking, and a virtual wall...
 n = [2 -1 2]';
-[q_des_cB,~, le_cB] = IK_part_cB(M,S,q0,J_limits,d_tool,p_goal,n);
+[q_des_cB,~, le_cB,cond_ang_Cb,cond_lin_Cb,iso_ang_Cb,iso_lin_Cb] = IK_part_cB(M,S,q0,J_limits,d_tool,p_goal,n);
 final_q = rad2deg(q_des_cB)
 
-figure(2)
+figure(14)
 plot(le_cB)
     ylim([0 1.2*max(le_cB)])
+     title('Linear Error')
+    ylabel('error [m]')
+    xlabel('iteration')
 
-figure(6)
+figure(15)
 lbr = importrobot('iiwa7.urdf'); % 14 kg payload version
 lbr.DataFormat = 'column';
 show(lbr,q_des_cB, 'Frames', 'off');
@@ -224,8 +285,25 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Joint Restraints + orientation control w/ virtual wall');
 
+figure(16)
+plot(cond_ang_Cb)
+hold on 
+plot(cond_lin_Cb)
+title('Condition number Cb')
+hold off
+legend('Cond angular Cb','Cond linear Cb')
+
+figure(17)
+plot(iso_ang_Cb)
+hold on 
+plot(iso_lin_Cb)
+title('Isotropy number Cb')
+hold off 
+legend('Iso angular Cb','Iso linear Cb')
+
+
 %%
-% I'll be honest I was surprised with this one. Despite j6 hitting its
+% Discusion - I'll be honest I was surprised with this one. Despite j6 hitting its
 % joint limit, the more constrained system was able to perform better.
 % Perhaps the combination of the constraints increased the robusteness of
 % the system. Regardless, converging in 49 iterations is pretty efficient.
@@ -248,7 +326,7 @@ p3 = [0 0.6 0.2]';
 [q_des, ~, le2] = IK_part_a(M,S,q_des,J_limits,d_tool,p2);
 [~, ~, le3] = IK_part_a(M,S,q_des,J_limits,d_tool,p3);
 
-figure()
+figure(18)
 le_a = [le1 le2 le3];
 plot(le_a), hold on;
 xline([length(le1) length(le1)+length(le2)], ':');
@@ -262,7 +340,7 @@ xline([length(le1) length(le1)+length(le2)], ':');
 [q_des, ~, le2] = IK_part_b(M,S,q_des,J_limits,d_tool,p2);
 [~, ~, le3] = IK_part_b(M,S,q_des,J_limits,d_tool,p3);
 
-figure()
+figure(19)
 le_b = [le1 le2 le3];
 plot(le_b), hold on;
 xline([length(le1) length(le1)+length(le2)], ':');
@@ -276,7 +354,7 @@ xline([length(le1) length(le1)+length(le2)], ':');
 [q_des, ~, le2] = IK_part_cA(M,S,q_des,J_limits,d_tool,p2,n2);
 [~, ~, le3] = IK_part_cA(M,S,q_des,J_limits,d_tool,p3,n3);
 
-figure()
+figure(20)
 le_cA = [le1 le2 le3];
 plot(le_cA), hold on;
 xline([length(le1) length(le1)+length(le2)], ':');
@@ -290,7 +368,7 @@ xline([length(le1) length(le1)+length(le2)], ':');
 [q_des, ~, le2] = IK_part_cB(M,S,q_des,J_limits,d_tool,p2,n2);
 [~, ~, le3] = IK_part_cB(M,S,q_des,J_limits,d_tool,p3,n3);
 
-figure()
+figure(21)
 le_cB = [le1 le2 le3];
 plot(le_cB), hold on;
 xline([length(le1) length(le1)+length(le2)], ':');
@@ -298,8 +376,8 @@ xline([length(le1) length(le1)+length(le2)], ':');
     title('Linear Error: All Restraints')
     ylim([0 1.2*max(le_cB)])
 
-%% final plot?
-figure()
+%% final plot
+figure(22)
 plot(le_a); hold on
 plot(le_b)
 plot(le_cA)

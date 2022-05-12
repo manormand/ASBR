@@ -1,4 +1,4 @@
-function [q_des, q, le] = IK_part_b(M,S,q,J_limits,d_tool,p)
+function [q_des, q, le,cond_ang,cond_lin,iso_ang,iso_lin] = IK_part_b(M,S,q,J_limits,d_tool,p)
 % redundancy_resolution Control robot from config a to b
 %   Expansion from J_inverse_kinematics using manipulability as a secondary 
 %   objective function. This function calculates manipulability in its own 
@@ -50,7 +50,14 @@ i = 1;
 
 while outside_tolerance(D) && i < max_iter
     t = getT([0,0,d_tool]',M,S,q(:,i));
-    orientationControl(M,S,q(:,i))
+    cond_a = J_condition(M,S,q(:,i));
+    iso_a  = J_isotropy(M,S,q(:,i));
+    cond_ang(i) = cond_a(1);
+    cond_lin(i) = cond_a(2);
+    iso_ang(i) = iso_a(1);
+    iso_lin(i) = iso_a(2);
+    
+    orientationControl(M,S,q(:,i));
     dq = zeta*positionControl(S,q(:,i),t,p) + eta*orientationControl(M,S,q(:,i));
     q(:,i+1) = q(:,i) + dq;
     q(:,i+1) = jointLimiter(q(:,i+1),J_limits);
