@@ -71,7 +71,7 @@ hold off
 xlim([-1 1]), ylim([-1 1]), zlim([-0.25 1.75])
 title('Original Robot Position')
 
-%%
+%% 
 
 %% PA.a
 % Here we perform inverse kinematics with joint limitation implemented.
@@ -128,11 +128,19 @@ title('Isotropy number a')
 hold off 
 legend('Iso angular a','Iso linear a ')
 
+%% 
+%%
 
 %%
 % Discusion - These results are actually quite nice. Only 7 iterations? I'll take it. It
 % should be noted that the tool was not oriented properly. Heck the robot
-% is a little funky. But hey, it works!
+% is a little funky. But hey, it works! The condition number and isotropy
+% numbers are a bit higher for linear side of things which kinda makes sense as you see the robot doesn't
+% much linear space to work with based on the end position and since it
+% took only like 7 iterations to get there it probably okay to assume that
+% the final shape is what it had to deal with more during the motion thus
+% the high linear condition and iso numbers
+%
 
 %% PA.b
 % Now we add a littl bit of *Pazzaz*. We can restrict the orientation to be
@@ -186,11 +194,15 @@ title('Isotropy number b')
 hold off 
 legend('Iso angular b','Iso linear b')
     
+%% 
+%%
 
 %%
 % Discusion - The iteration count nearly tripled to 20 iterations, yet the orientation
 % was preserved despite starting at the oposite orientation (tool was
-% upward). Much more confident with this one.
+% upward). Much more confident with this one. The condition and isotropy
+% number jumps at the start probably because its fighting a singualarity at
+% the start but it calms down and converges 
 
 %% PA.c - a
 % Now we add a pesky wall. I deefined it in 3 points, shown in the robot
@@ -242,14 +254,17 @@ title('Isotropy number Ca')
 hold off 
 legend('Iso angular Ca','Iso linear Ca')
 
-
+%%
+%%
 
 %%
 % Discusion - Man that wall came out of no where. Because I did not add any more
 % compensation, I expected the wall to mess with the simulation. The robot
 % does not even converge, which kinda sucks. You can see that the final q
 % hits the joint limits of the robot, most likely why we see this
-% divergence.
+% divergence. % It has major spikes as seen by the condition and isotropy graphs probably
+% because it hits the joint limit its a bit more jumpy trying to avoid the
+% forbidden region 
 
 %% PA.c - b
 % Now we add every restraint in the book. We are talking joint limits,
@@ -257,6 +272,7 @@ legend('Iso angular Ca','Iso linear Ca')
 n = [2 -1 2]';
 [q_des_cB,~, le_cB,cond_ang_Cb,cond_lin_Cb,iso_ang_Cb,iso_lin_Cb] = IK_part_cB(M,S,q0,J_limits,d_tool,p_goal,n);
 final_q = rad2deg(q_des_cB)
+%plots
 
 figure(14)
 plot(le_cB)
@@ -300,13 +316,18 @@ plot(iso_lin_Cb)
 title('Isotropy number Cb')
 hold off 
 legend('Iso angular Cb','Iso linear Cb')
-
+%%
 
 %%
 % Discusion - I'll be honest I was surprised with this one. Despite j6 hitting its
 % joint limit, the more constrained system was able to perform better.
 % Perhaps the combination of the constraints increased the robusteness of
-% the system. Regardless, converging in 49 iterations is pretty efficient.
+% the system. Regardless, converging in 49 iterations is pretty efficient. 
+% It has major spikes aswell but hey are alot less random as seen by the condition and isotropy graphs probably
+% because without the joint limit j6 was reached causing it to jump when that happened 
+%its a bit more jumpy trying to avoid the forbidden region 
+
+%%
 
 %% Part d - Configs
 % We tested 3 separate configs, in a row. Sounds like fun.
@@ -333,6 +354,12 @@ xline([length(le1) length(le1)+length(le2)], ':');
     hold off;
     title('Linear Error: Joint Restraints')
     ylim([0 1.2*max(le_a)])
+ %%
+ % The linear error is pretty smooth besides the jump at the start and end,
+ % right before converging, the fact that the linear error is low and there
+ % were no minimizing change in direction was imposed kinda impressed 
+ %
+    
 
 %%
 % Testing for part b
@@ -347,6 +374,14 @@ xline([length(le1) length(le1)+length(le2)], ':');
     hold off;
     title('Linear Error: Joint Restraints + orientation lock')
     ylim([0 1.2*max(le_b)])
+    
+%%
+ % The linear error is pretty smooth besides the jump at the start,
+ % it did better than its predecessor probably because of the minimization
+ % of change in direction of the tool
+ %
+        
+    
 
 %%
 % Testing for part c-a
@@ -361,6 +396,14 @@ xline([length(le1) length(le1)+length(le2)], ':');
     hold off;
     title('Linear Error: Joint Restraints + Virtual Wall')
     ylim([0 1.2*max(le_cA)])
+    
+%%
+ % The linear error is pretty wierd on this one i dont think inverse
+ % kinematics alone was sufficent to dodge a wall while all the other
+ % constraints were imposed, it probably ran into a bunch of singularity as
+ % you can see in the conditon and isotropy graphs
+ %
+    
 
 %%
 % Testing for part c-b
@@ -375,6 +418,12 @@ xline([length(le1) length(le1)+length(le2)], ':');
     hold off;
     title('Linear Error: All Restraints')
     ylim([0 1.2*max(le_cB)])
+    
+ % The linear error is pretty wierd on this one i dont think inverse
+ % kinematics alone was sufficent to dodge a wall while all the other
+ % constraints were imposed, it probably ran into a bunch of singularity as
+ % you can see in the conditon and isotropy graphs
+ %
 
 %% final plot
 figure(22)
@@ -386,3 +435,9 @@ plot(le_cB)
     ylabel('error [m]')
     xlabel('iteration')
     legend('Part a','Part b','Part c-a','Part c-b')
+    
+    
+%% 
+
+% all the errors side by side so you can kinda see which one performed the
+% worse under different conditions 
